@@ -30,18 +30,48 @@
     caja.hidden = false;
   }
 
+  // Como en la portada: "RESILIENTES" arriba; abajo el "SIN" rojo, de lado, junto a un "TECHO" grande.
+  // Sin espacios entre las piezas: lectores de pantalla y buscadores siguen leyendo "sintecho".
+  function pintarTitulo(h1, titulo) {
+    const partes = A.partirTitulo(titulo);
+    const i = partes.findIndex(p => p.rojo);
+    if (i === -1) { h1.textContent = titulo; return; }
+    const span = (clase, texto) => {
+      const s = document.createElement('span');
+      s.className = clase;
+      s.textContent = texto;
+      return s;
+    };
+    const linea2 = span('portada__linea2', '');
+    linea2.append(span('portada__sin', partes[i].texto));
+    if (partes[i + 1]) linea2.append(span('portada__techo', partes[i + 1].texto));
+    h1.replaceChildren(...(i > 0 ? [span('portada__linea1', partes[0].texto)] : []), linea2);
+    ajustarTitulo(h1);
+    if (document.fonts) document.fonts.ready.then(() => ajustarTitulo(h1));
+    window.addEventListener('resize', () => ajustarTitulo(h1));
+  }
+
+  // Como en la portada, "SIN"+"TECHO" mide lo mismo de ancho que "RESILIENTES".
+  // La fuente es más estrecha que la de la portada, así que se mide en vez de fijar un tamaño.
+  function ajustarTitulo(h1) {
+    const l1 = h1.querySelector('.portada__linea1');
+    const l2 = h1.querySelector('.portada__linea2');
+    if (!l1 || !l2) return;
+    l2.style.fontSize = '';
+    const rango = document.createRange();
+    rango.selectNodeContents(l1);
+    const ancho1 = rango.getBoundingClientRect().width;
+    const ancho2 = l2.getBoundingClientRect().width;
+    if (!ancho1 || !ancho2) return;
+    const base = parseFloat(getComputedStyle(l2).fontSize);
+    l2.style.fontSize = `${base * ancho1 / ancho2}px`;
+  }
+
   function pintarLibro() {
     document.querySelectorAll('[data-libro]').forEach(el => {
       el.textContent = libro[el.dataset.libro];
     });
-    const h1 = document.querySelector('[data-libro="titulo"]');
-    h1.replaceChildren(...A.partirTitulo(libro.titulo).map(({ texto, rojo }) => {
-      if (!rojo) return document.createTextNode(texto);
-      const span = document.createElement('span');
-      span.className = 'portada__sin';
-      span.textContent = texto;
-      return span;
-    }));
+    pintarTitulo(document.querySelector('[data-libro="titulo"]'), libro.titulo);
     document.querySelector('[data-libro-img]').src = libro.portada;
   }
 

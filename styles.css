@@ -85,7 +85,24 @@ a { color: inherit; }
   text-transform: uppercase;
   letter-spacing: .01em;
 }
-.portada__sin { color: var(--rojo-portada); }
+/* Título armado como la portada: "SIN" de lado (se lee de abajo hacia arriba) junto a "TECHO". */
+.portada__linea1 { display: block; }
+.portada__linea2 {
+  display: inline-flex;
+  align-items: flex-end;
+  font-size: 1.42em;           /* TECHO más grande que RESILIENTES, como en la portada */
+  line-height: .8;
+  margin-top: .04em;
+}
+.portada__sin {
+  color: var(--rojo-portada);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: .6em;             /* el largo de "SIN" ≈ el alto de "TECHO" */
+  line-height: .9;
+  letter-spacing: .02em;
+  margin-right: .06em;
+}
 .portada__subtitulo {
   margin: 12px 0 0;
   font-weight: 700;
