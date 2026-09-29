@@ -5,23 +5,23 @@ const A = require('../agenda.js');
 
 const LIBRO = {
   titulo: '"Resilientes" sintecho',
-  subtitulo: 'Etnografía de las tecnologías de poder estadounidense en el posdesastre',
-  autor: 'Jesús Vélez Méndez',
-  resena: 'Reseña de prueba.',
+  subtitulo: 'EtnografÃ­a de las tecnologÃ­as de poder estadounidense en el posdesastre',
+  autor: 'JesÃºs VÃ©lez MÃ©ndez',
+  resena: 'ReseÃ±a de prueba.',
   portada: 'assets/portada.jpg'
 };
 
 const base = (extra = {}) => ({
   fecha: '2026-10-18',
   hora: '19:00',
-  lugar: 'Librería Mágica',
-  direccion: 'Calle Ponce de León 1126, San Juan',
+  lugar: 'LibrerÃ­a MÃ¡gica',
+  direccion: 'Calle Ponce de LeÃ³n 1126, San Juan',
   ...extra
 });
 
 // ---------- validar ----------
 
-test('validar: presentación completa no da errores', () => {
+test('validar: presentaciÃ³n completa no da errores', () => {
   const r = A.validar(LIBRO, [base({
     duracionMin: 90, mapa: 'https://maps.app.goo.gl/abc',
     invitados: ['Ana Rivera (moderadora)'], notas: 'Entrada libre'
@@ -30,7 +30,7 @@ test('validar: presentación completa no da errores', () => {
   assert.equal(r.validas.length, 1);
 });
 
-test('validar: requeridos faltantes nombran índice y campo; la válida sobrevive', () => {
+test('validar: requeridos faltantes nombran Ã­ndice y campo; la vÃ¡lida sobrevive', () => {
   const r = A.validar(LIBRO, [base(), { hora: '19:00' }]);
   assert.deepEqual(r.errores, [
     'presentaciones[1].fecha: requerido',
@@ -38,7 +38,7 @@ test('validar: requeridos faltantes nombran índice y campo; la válida sobrevive'
     'presentaciones[1].direccion: requerido'
   ]);
   assert.equal(r.validas.length, 1);
-  assert.equal(r.validas[0].lugar, 'Librería Mágica');
+  assert.equal(r.validas[0].lugar, 'LibrerÃ­a MÃ¡gica');
 });
 
 test('validar: texto en blanco cuenta como faltante', () => {
@@ -65,7 +65,7 @@ test('validar: hora debe ser HH:MM de 24 horas', () => {
 test('validar: duracionMin debe ser entero positivo', () => {
   for (const duracionMin of [0, -5, 90.5, '90']) {
     const r = A.validar(LIBRO, [base({ duracionMin })]);
-    assert.deepEqual(r.errores, ['presentaciones[0].duracionMin: debe ser un número entero de minutos mayor que 0'], String(duracionMin));
+    assert.deepEqual(r.errores, ['presentaciones[0].duracionMin: debe ser un nÃºmero entero de minutos mayor que 0'], String(duracionMin));
   }
 });
 
@@ -86,7 +86,7 @@ test('validar: notas debe ser texto', () => {
     ['presentaciones[0].notas: debe ser texto']);
 });
 
-test('validar: opcionales vacíos o null cuentan como ausentes (Review Focus 1)', () => {
+test('validar: opcionales vacÃ­os o null cuentan como ausentes (Review Focus 1)', () => {
   const r = A.validar(LIBRO, [
     base({ mapa: '', notas: '', invitados: [], duracionMin: null }),
     base({ mapa: null, notas: null, invitados: null, duracionMin: undefined })

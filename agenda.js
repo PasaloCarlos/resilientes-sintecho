@@ -1,4 +1,4 @@
-/* Lógica pura de la agenda. Sin DOM: corre en el navegador (window.Agenda)
+/* LÃ³gica pura de la agenda. Sin DOM: corre en el navegador (window.Agenda)
    y en Node (module.exports) para las pruebas. */
 (function (root) {
   'use strict';
@@ -10,7 +10,7 @@
     return typeof v === 'string' && v.trim() !== '';
   }
 
-  // Un opcional "vacío" (undefined, null o "") cuenta como ausente.
+  // Un opcional "vacÃ­o" (undefined, null o "") cuenta como ausente.
   function esAusente(v) {
     return v === undefined || v === null || v === '';
   }
@@ -41,7 +41,7 @@
       errores.push(`${ruta}.hora: debe ser HH:MM en 24 horas (ej. 19:00)`);
     }
     if (!esAusente(p.duracionMin) && !(Number.isInteger(p.duracionMin) && p.duracionMin > 0)) {
-      errores.push(`${ruta}.duracionMin: debe ser un número entero de minutos mayor que 0`);
+      errores.push(`${ruta}.duracionMin: debe ser un nÃºmero entero de minutos mayor que 0`);
     }
     if (!esAusente(p.invitados) &&
         !(Array.isArray(p.invitados) && p.invitados.every(esTextoNoVacio))) {
