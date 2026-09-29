@@ -313,3 +313,23 @@ test('descripcion: "Más información" apunta a masInfo si existe; si no, a la p
   const t = A.ics(base({ masInfo: ev }), LIBRO, URL_PAGINA).replace(/\r\n /g, '');
   assert.ok(t.includes('DESCRIPTION:Más información: ' + ev));
 });
+
+// ---------- título: "sin" en rojo ----------
+
+test('partirTitulo: separa el "sin" de "sintecho" para pintarlo en rojo', () => {
+  assert.deepEqual(A.partirTitulo('"Resilientes" sintecho'), [
+    { texto: '"Resilientes" ', rojo: false },
+    { texto: 'sin', rojo: true },
+    { texto: 'techo', rojo: false }
+  ]);
+  assert.deepEqual(A.partirTitulo('"RESILIENTES" SINTECHO'), [
+    { texto: '"RESILIENTES" ', rojo: false },
+    { texto: 'SIN', rojo: true },
+    { texto: 'TECHO', rojo: false }
+  ]);
+});
+
+test('partirTitulo: sin "sintecho" (o con "sin techo" separado) queda entero', () => {
+  assert.deepEqual(A.partirTitulo('Otro título'), [{ texto: 'Otro título', rojo: false }]);
+  assert.deepEqual(A.partirTitulo('sin techo'), [{ texto: 'sin techo', rojo: false }]);
+});

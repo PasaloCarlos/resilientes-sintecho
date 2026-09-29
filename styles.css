@@ -3,6 +3,7 @@
   --azul-hondo: #0e2a86;
   --rojo: #d11f25;
   --rojo-texto: #b3141a;
+  --rojo-portada: #ed1b24;   /* el rojo exacto del "SIN" de la portada */
   --papel: #f6f3ea;
   --tinta: #16213a;
   --tinta-suave: #4a5470;
@@ -84,6 +85,7 @@ a { color: inherit; }
   text-transform: uppercase;
   letter-spacing: .01em;
 }
+.portada__sin { color: var(--rojo-portada); }
 .portada__subtitulo {
   margin: 12px 0 0;
   font-weight: 700;

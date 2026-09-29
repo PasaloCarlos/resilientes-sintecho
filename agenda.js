@@ -91,6 +91,18 @@
       .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   }
 
+  // Como en la portada: el "sin" de "sintecho" va en rojo. Sigue siendo una sola palabra.
+  function partirTitulo(titulo) {
+    const m = /sin(?=techo)/i.exec(titulo);
+    if (!m) return [{ texto: titulo, rojo: false }];
+    const partes = [
+      { texto: titulo.slice(0, m.index), rojo: false },
+      { texto: m[0], rojo: true },
+      { texto: titulo.slice(m.index + 3), rojo: false }
+    ];
+    return partes.filter(p => p.texto !== '');
+  }
+
   function tituloEvento(libro) {
     return `Presentación: ${libro.titulo} — ${libro.autor}`;
   }
@@ -239,7 +251,7 @@
   }
 
   const Agenda = {
-    validar, instante, fin, hoyPR, dividir, horaLegible, formatear, urlMapa, slug,
+    validar, instante, fin, hoyPR, dividir, horaLegible, formatear, urlMapa, slug, partirTitulo,
     tituloEvento, descripcion, utcCompacto, urlGoogle, escaparIcs, plegar, ics, nombreIcs
   };
 

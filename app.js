@@ -34,6 +34,14 @@
     document.querySelectorAll('[data-libro]').forEach(el => {
       el.textContent = libro[el.dataset.libro];
     });
+    const h1 = document.querySelector('[data-libro="titulo"]');
+    h1.replaceChildren(...A.partirTitulo(libro.titulo).map(({ texto, rojo }) => {
+      if (!rojo) return document.createTextNode(texto);
+      const span = document.createElement('span');
+      span.className = 'portada__sin';
+      span.textContent = texto;
+      return span;
+    }));
     document.querySelector('[data-libro-img]').src = libro.portada;
   }
 
