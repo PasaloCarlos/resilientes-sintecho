@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>"Resilientes" sintecho — Presentaciones</title>
+  <meta name="description" content="Fechas y lugares de las presentaciones del libro &quot;Resilientes&quot; sintecho de Jesús Vélez Méndez.">
+  <meta name="theme-color" content="#1c4fd6">
+  <!-- La página tiene su propio diseño sobre la lona azul: que las extensiones de modo oscuro no lo repinten. -->
+  <meta name="color-scheme" content="only light">
+  <meta name="darkreader-lock">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_PR">
+  <meta property="og:title" content="&quot;Resilientes&quot; sintecho — Presentaciones">
+  <meta property="og:description" content="Etnografía de las tecnologías de poder estadounidense en el posdesastre. Jesús Vélez Méndez. Fechas y lugares de las presentaciones.">
+  <meta property="og:image" content="assets/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@700;800&family=Montserrat:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="errores" class="errores" role="alert" hidden>
+    <p><strong>Hay errores en presentaciones.js</strong> (las entradas con error no se muestran):</p>
+    <ul></ul>
+  </div>
+
+  <header class="portada">
+    <img class="portada__img" data-libro-img src="assets/portada.jpg" width="800" height="1200"
+         alt="Portada del libro &quot;Resilientes&quot; sintecho de Jesús Vélez Méndez">
+    <div class="portada__texto">
+      <p class="portada__antetitulo">Presentaciones del libro</p>
+      <h1 class="portada__titulo" data-libro="titulo">"Resilientes" sintecho</h1>
+      <p class="portada__subtitulo" data-libro="subtitulo">Etnografía de las tecnologías de poder estadounidense en el posdesastre</p>
+      <p class="portada__autor" data-libro="autor">Jesús Vélez Méndez</p>
+      <p class="portada__resena" data-libro="resena"></p>
+    </div>
+  </header>
+
+  <main class="agenda">
+    <section aria-labelledby="t-proximas">
+      <h2 id="t-proximas" class="agenda__titulo">Próximas presentaciones</h2>
+      <ol id="proximas" class="tarjetas"></ol>
+      <p id="sin-proximas" class="agenda__vacio" hidden>Pronto anunciaremos nuevas fechas.</p>
+    </section>
+
+    <section id="bloque-anteriores" hidden>
+      <details class="anteriores">
+        <summary class="anteriores__resumen">Presentaciones anteriores</summary>
+        <ol id="anteriores" class="tarjetas tarjetas--pasadas"></ol>
+      </details>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <p>"Resilientes" sintecho · Jesús Vélez Méndez</p>
+  </footer>
+
+  <template id="tpl-tarjeta">
+    <li class="tarjeta">
+      <div class="tarjeta__fecha" aria-hidden="true">
+        <span class="tarjeta__dia"></span>
+        <span class="tarjeta__mes"></span>
+        <span class="tarjeta__semana"></span>
+      </div>
+      <div class="tarjeta__cuerpo">
+        <span class="tarjeta__badge" hidden>Próxima</span>
+        <p class="tarjeta__cuando"><time></time></p>
+        <p class="tarjeta__lugar"></p>
+        <p class="tarjeta__direccion"></p>
+        <p class="tarjeta__invitados" hidden></p>
+        <p class="tarjeta__notas" hidden></p>
+        <div class="tarjeta__acciones">
+          <a class="boton boton--claro tarjeta__mapa" target="_blank" rel="noopener">Cómo llegar</a>
+          <div class="calendario">
+            <button type="button" class="boton tarjeta__cal" aria-expanded="false">Añadir al calendario</button>
+            <div class="calendario__menu" hidden>
+              <a class="calendario__opcion calendario__google" target="_blank" rel="noopener">Google Calendar</a>
+              <button type="button" class="calendario__opcion calendario__ics">Apple / Outlook (.ics)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <script src="presentaciones.js"></script>
+  <script src="agenda.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
