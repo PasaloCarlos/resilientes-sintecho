@@ -11,7 +11,7 @@ Si se borra o se deja vacío, el botón desaparece.
 ## Video del autor
 
 `video` en `window.libro` es un reel o post de Instagram (`https://www.instagram.com/reel/…/`).
-La página muestra el reproductor de Instagram bajo la reseña, y "Comprar el libro" debajo del video.
+La página muestra el reproductor de Instagram bajo la reseña, con "Comprar el libro" entre la reseña y el video.
 Instagram no permite que su reproductor arranque solo (autoplay); para eso haría falta el archivo del video.
 Si se borra o se deja vacío, el video desaparece. El reel tiene que ser público para que se vea.
 

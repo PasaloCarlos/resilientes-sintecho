@@ -61,7 +61,7 @@ a { color: inherit; }
   padding: 48px 16px 8px;
   text-align: center;
   display: grid;
-  grid-template-areas: "texto" "video" "acciones";
+  grid-template-areas: "texto" "acciones" "video";
 }
 .portada__texto { grid-area: texto; max-width: 36rem; margin: 0 auto; }
 .portada__antetitulo {
