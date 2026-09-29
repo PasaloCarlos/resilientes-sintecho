@@ -121,6 +121,9 @@ a { color: inherit; }
 }
 .portada__resena { margin: 16px 0 0; }
 .portada__resena:empty { display: none; }
+.portada__acciones { margin: 20px 0 0; }
+.boton.boton--comprar { background: var(--rojo); border-color: var(--rojo); font-size: 1rem; padding: 0 22px; }
+.boton.boton--comprar:hover { background: #a8151a; border-color: #a8151a; }
 
 @media (min-width: 768px) {
   .portada { padding-top: 80px; }

@@ -71,6 +71,13 @@
       el.textContent = libro[el.dataset.libro];
     });
     pintarTitulo(document.querySelector('[data-libro="titulo"]'), libro.titulo);
+
+    const comprar = libroCrudo.comprar;
+    if (typeof comprar === 'string' && comprar.startsWith('https://')) {
+      document.querySelector('.portada__comprar').href = comprar;
+    } else {
+      document.querySelector('.portada__acciones').remove();
+    }
   }
 
   function tarjeta(p, { pasada, primera }) {

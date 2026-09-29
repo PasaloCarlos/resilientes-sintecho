@@ -3,6 +3,11 @@
 Página estática con las presentaciones del libro *"Resilientes" sintecho* de Jesús Vélez Méndez.
 Sin build, sin dependencias. **"sintecho" es una sola palabra.**
 
+## Dónde comprar
+
+`comprar` en `window.libro` (en `presentaciones.js`) es el enlace del botón "Comprar el libro".
+Si se borra o se deja vacío, el botón desaparece.
+
 ## Añadir o cambiar una presentación
 
 Edita **solo** `presentaciones.js`. Copia un bloque `{ ... }` dentro de la lista y cambia los datos:

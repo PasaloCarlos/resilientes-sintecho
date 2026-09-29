@@ -340,3 +340,12 @@ test('validar: libro ya no necesita portada (el título sobre la lona es la port
   const { portada, ...sinPortada } = LIBRO;
   assert.deepEqual(A.validar(sinPortada, []).errores, []);
 });
+
+// ---------- dónde comprar ----------
+
+test('validar: libro.comprar es opcional y debe empezar con https://', () => {
+  assert.deepEqual(A.validar({ ...LIBRO, comprar: 'https://www.libreriang.com/x' }, []).errores, []);
+  assert.deepEqual(A.validar({ ...LIBRO, comprar: '' }, []).errores, []);
+  assert.deepEqual(A.validar({ ...LIBRO, comprar: 'www.libreriang.com/x' }, []).errores,
+    ['libro.comprar: debe empezar con https://']);
+});

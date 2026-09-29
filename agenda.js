@@ -235,6 +235,10 @@
       for (const campo of CAMPOS_LIBRO) {
         if (!esTextoNoVacio(libro[campo])) errores.push(`libro.${campo}: requerido`);
       }
+      if (!esAusente(libro.comprar) &&
+          !(typeof libro.comprar === 'string' && libro.comprar.startsWith('https://'))) {
+        errores.push('libro.comprar: debe empezar con https://');
+      }
     }
 
     if (!Array.isArray(presentaciones)) {
