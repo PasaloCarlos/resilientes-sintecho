@@ -99,7 +99,7 @@
     const lineas = [];
     if (Array.isArray(p.invitados) && p.invitados.length) lineas.push(`Con: ${p.invitados.join(', ')}`);
     if (esTextoNoVacio(p.notas)) lineas.push(p.notas);
-    lineas.push(`Más información: ${urlPagina}`);
+    lineas.push(`Más información: ${esTextoNoVacio(p.masInfo) ? p.masInfo : urlPagina}`);
     return lineas.join('\n');
   }
 
@@ -201,8 +201,11 @@
         !(Array.isArray(p.invitados) && p.invitados.every(esTextoNoVacio))) {
       errores.push(`${ruta}.invitados: debe ser una lista de textos, ej. ["Nombre (rol)"]`);
     }
-    if (!esAusente(p.mapa) && !(typeof p.mapa === 'string' && p.mapa.startsWith('https://'))) {
-      errores.push(`${ruta}.mapa: debe empezar con https://`);
+    for (const campo of ['mapa', 'masInfo']) {
+      const v = p[campo];
+      if (!esAusente(v) && !(typeof v === 'string' && v.startsWith('https://'))) {
+        errores.push(`${ruta}.${campo}: debe empezar con https://`);
+      }
     }
     if (!esAusente(p.notas) && typeof p.notas !== 'string') {
       errores.push(`${ruta}.notas: debe ser texto`);

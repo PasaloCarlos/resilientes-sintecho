@@ -16,6 +16,7 @@ Edita **solo** `presentaciones.js`. Copia un bloque `{ ... }` dentro de la lista
   direccion: 'Calle 123, Pueblo',
   mapa: 'https://maps.app.goo.gl/...',            // opcional
   invitados: ['Nombre Apellido (moderadora)'],   // opcional
+  masInfo: 'https://www.facebook.com/events/...',  // opcional: botón "Más información" del evento
   notas: 'Entrada libre'                           // opcional
 },
 ```

@@ -72,6 +72,14 @@
     mapa.href = A.urlMapa(p);
     mapa.setAttribute('aria-label', `Cómo llegar a ${p.lugar}`);
 
+    const masInfo = q('.tarjeta__masinfo');
+    if (typeof p.masInfo === 'string' && p.masInfo.trim() !== '') {
+      masInfo.href = p.masInfo;
+      masInfo.setAttribute('aria-label', `Más información sobre la presentación en ${p.lugar}`);
+    } else {
+      masInfo.remove();
+    }
+
     q('.calendario__google').href = A.urlGoogle(p, libro, URL_PAGINA);
     q('.calendario__ics').addEventListener('click', () => {
       descargar(A.nombreIcs(p), A.ics(p, libro, URL_PAGINA));

@@ -292,3 +292,24 @@ test('ics: invitados y notas largos quedan plegados y se recuperan', () => {
 test('nombreIcs', () => {
   assert.equal(A.nombreIcs(base()), 'presentacion-2026-10-18.ics');
 });
+
+// ---------- más información por evento ----------
+
+test('validar: masInfo debe empezar con https://; vacío o null cuenta como ausente', () => {
+  assert.deepEqual(A.validar(LIBRO, [base({ masInfo: 'http://facebook.com/events/1' })]).errores,
+    ['presentaciones[0].masInfo: debe empezar con https://']);
+  assert.deepEqual(A.validar(LIBRO, [base({ masInfo: 'facebook.com/events/1' })]).errores,
+    ['presentaciones[0].masInfo: debe empezar con https://']);
+  assert.deepEqual(A.validar(LIBRO, [base({ masInfo: '' }), base({ masInfo: null }),
+    base({ masInfo: 'https://facebook.com/events/1' })]).errores, []);
+});
+
+test('descripcion: "Más información" apunta a masInfo si existe; si no, a la página', () => {
+  const ev = 'https://www.eventbrite.com/e/presentacion-123';
+  assert.equal(A.descripcion(base({ masInfo: ev }), URL_PAGINA), 'Más información: ' + ev);
+  assert.equal(A.descripcion(base({ masInfo: '' }), URL_PAGINA), 'Más información: ' + URL_PAGINA);
+  const q = new URL(A.urlGoogle(base({ masInfo: ev }), LIBRO, URL_PAGINA)).searchParams;
+  assert.equal(q.get('details'), 'Más información: ' + ev);
+  const t = A.ics(base({ masInfo: ev }), LIBRO, URL_PAGINA).replace(/\r\n /g, '');
+  assert.ok(t.includes('DESCRIPTION:Más información: ' + ev));
+});

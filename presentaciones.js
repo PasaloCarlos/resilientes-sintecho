@@ -11,6 +11,9 @@
      duracionMin  opcional   minutos (por defecto 120); solo se usa para el calendario
      mapa         opcional   enlace https:// de Google Maps; si falta, se busca lugar + dirección
      invitados    opcional   lista: ["Nombre Apellido (moderadora)", "..."]
+     masInfo      opcional   enlace https:// con más información de ESE evento (evento de Facebook,
+                             Eventbrite, página del lugar). Pone un botón "Más información" en la
+                             tarjeta y el calendario apunta ahí; si falta, el calendario apunta a esta página.
      notas        opcional   una línea, ej. "Entrada libre"
 
    Si algo está mal escrito, la página muestra un aviso rojo diciendo qué y dónde.
@@ -41,6 +44,7 @@ window.presentaciones = [
     lugar: 'Centro cultural de ejemplo',
     direccion: 'Calle Ejemplo 45, Caguas',
     invitados: ['Nombre Apellido (comentarista)', 'Nombre Apellido (moderador)'],
+    masInfo: 'https://www.example.com/',
     notas: 'EJEMPLO'
   },
   {
