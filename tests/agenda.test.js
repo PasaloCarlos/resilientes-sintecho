@@ -170,3 +170,43 @@ test('dividir: próximas ascendentes (misma fecha por hora), anteriores descende
 test('dividir: lista vacía', () => {
   assert.deepEqual(A.dividir([], new Date()), { proximas: [], anteriores: [] });
 });
+
+// ---------- formato ----------
+
+test('formatear: bloque de fecha y línea completa en español', () => {
+  assert.deepEqual(A.formatear(base()), {
+    dia: '18', mes: 'OCT', semana: 'dom',
+    completa: 'domingo, 18 de octubre · 7:00 p.m.'
+  });
+  assert.deepEqual(A.formatear(base({ fecha: '2026-11-12', hora: '10:30' })), {
+    dia: '12', mes: 'NOV', semana: 'jue',
+    completa: 'jueves, 12 de noviembre · 10:30 a.m.'
+  });
+  assert.equal(A.formatear(base({ fecha: '2026-10-17' })).completa, 'sábado, 17 de octubre · 7:00 p.m.');
+  assert.equal(A.formatear(base({ fecha: '2026-11-08' })).dia, '8');
+});
+
+test('horaLegible: medianoche, mediodía y ceros', () => {
+  assert.equal(A.horaLegible('00:15'), '12:15 a.m.');
+  assert.equal(A.horaLegible('12:00'), '12:00 p.m.');
+  assert.equal(A.horaLegible('09:05'), '9:05 a.m.');
+  assert.equal(A.horaLegible('23:59'), '11:59 p.m.');
+});
+
+test('urlMapa: usa mapa si existe', () => {
+  assert.equal(A.urlMapa(base({ mapa: 'https://maps.app.goo.gl/abc' })), 'https://maps.app.goo.gl/abc');
+});
+
+test('urlMapa: sin mapa (o vacío) busca lugar + dirección, codificado (Review Focus 1 y 3)', () => {
+  const esperado = 'https://www.google.com/maps/search/?api=1&query=' +
+    'Librer%C3%ADa%20M%C3%A1gica%2C%20Calle%20Ponce%20de%20Le%C3%B3n%201126%2C%20San%20Juan';
+  assert.equal(A.urlMapa(base()), esperado);
+  assert.equal(A.urlMapa(base({ mapa: '' })), esperado);
+  assert.equal(A.urlMapa(base({ lugar: 'Café & Libros' })).includes('Caf%C3%A9%20%26%20Libros'), true);
+});
+
+test('slug: sin acentos ni símbolos (Review Focus 3)', () => {
+  assert.equal(A.slug('Librería Mágica'), 'libreria-magica');
+  assert.equal(A.slug('  Café & Libros, Río Piedras! '), 'cafe-libros-rio-piedras');
+  assert.equal(A.slug('Ñandú'), 'nandu');
+});

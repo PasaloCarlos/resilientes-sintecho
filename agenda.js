@@ -56,6 +56,41 @@
     };
   }
 
+  // Tablas fijas en vez de Intl: PR tiene desfase fijo y así el texto es idéntico en todo navegador.
+  const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  const DIAS_CORTOS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+  const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio',
+    'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const MESES_CORTOS = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+
+  function horaLegible(hora) {
+    const [h, m] = hora.split(':').map(Number);
+    const h12 = h % 12 === 0 ? 12 : h % 12;
+    return `${h12}:${String(m).padStart(2, '0')} ${h < 12 ? 'a.m.' : 'p.m.'}`;
+  }
+
+  function formatear(p) {
+    const [y, m, d] = p.fecha.split('-').map(Number);
+    const semana = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+    return {
+      dia: String(d),
+      mes: MESES_CORTOS[m - 1],
+      semana: DIAS_CORTOS[semana],
+      completa: `${DIAS[semana]}, ${d} de ${MESES[m - 1]} · ${horaLegible(p.hora)}`
+    };
+  }
+
+  function urlMapa(p) {
+    if (esTextoNoVacio(p.mapa)) return p.mapa;
+    return 'https://www.google.com/maps/search/?api=1&query=' +
+      encodeURIComponent(`${p.lugar}, ${p.direccion}`);
+  }
+
+  function slug(s) {
+    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  }
+
   function erroresDePresentacion(p, ruta) {
     if (p === null || typeof p !== 'object' || Array.isArray(p)) {
       return [`${ruta}: debe ser un objeto { ... }`];
@@ -111,7 +146,7 @@
     return { errores, validas };
   }
 
-  const Agenda = { validar, instante, fin, hoyPR, dividir };
+  const Agenda = { validar, instante, fin, hoyPR, dividir, horaLegible, formatear, urlMapa, slug };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = Agenda;
   if (root) root.Agenda = Agenda;
