@@ -3,7 +3,7 @@
 (function (root) {
   'use strict';
 
-  const CAMPOS_LIBRO = ['titulo', 'subtitulo', 'autor', 'resena', 'portada'];
+  const CAMPOS_LIBRO = ['titulo', 'subtitulo', 'autor', 'resena'];
   const CAMPOS_REQUERIDOS = ['fecha', 'hora', 'lugar', 'direccion'];
 
   function esTextoNoVacio(v) {

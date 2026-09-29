@@ -333,3 +333,10 @@ test('partirTitulo: sin "sintecho" (o con "sin techo" separado) queda entero', (
   assert.deepEqual(A.partirTitulo('Otro título'), [{ texto: 'Otro título', rojo: false }]);
   assert.deepEqual(A.partirTitulo('sin techo'), [{ texto: 'sin techo', rojo: false }]);
 });
+
+// ---------- sin imagen de portada en la página ----------
+
+test('validar: libro ya no necesita portada (el título sobre la lona es la portada)', () => {
+  const { portada, ...sinPortada } = LIBRO;
+  assert.deepEqual(A.validar(sinPortada, []).errores, []);
+});

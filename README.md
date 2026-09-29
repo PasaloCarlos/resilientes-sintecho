@@ -46,7 +46,7 @@ node --test
 - `agenda.js` — la lógica pura: validación, hora de PR, formato, enlaces de calendario. Es lo que prueban las pruebas.
 - `app.js` — pinta la página.
 - `index.html`, `styles.css` — estructura y apariencia.
-- `assets/` — portada, imagen para compartir (`og.jpg`) y la lona azul del fondo (`lona.jpg`), todas recortadas de la portada original. Cómo regenerarlas: ver el plan en `docs/superpowers/plans/`.
+- `assets/` — imagen para compartir (`og.jpg`) y la lona azul del fondo (`lona.jpg`), ambas recortadas de la portada original. La página no muestra la foto de la portada: el título en esténcil sobre la lona hace ese papel. Cómo regenerarlas: ver el plan en `docs/superpowers/plans/`.
 
 ## Publicar (primera vez)
 

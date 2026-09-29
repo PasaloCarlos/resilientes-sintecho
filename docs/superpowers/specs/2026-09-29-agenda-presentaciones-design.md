@@ -196,6 +196,19 @@ The design takes its cues from the cover (a blue tarp, white stencil type and re
   - `og:image` = `assets/og.jpg`;
   - `lang="es"`.
 
+## 7.1 Amendments after the first build (2026-09-29, at the owner's request)
+
+- **Per-event link:** optional `masInfo` (`https://…`) field. It adds a "Más información"
+  button to upcoming cards, and the calendar description points to it, falling back to
+  this page.
+- **Title laid out like the cover:** "RESILIENTES" on line 1. On line 2, the "SIN" is in the
+  cover's exact red (`#ed1b24`), turned sideways to read bottom to top, next to a large
+  "TECHO". Line 2 is measured to match the width of line 1. It is still one word
+  ("sintecho") in the DOM.
+- **No cover image on the page:** the stencil title on the tarp *is* the cover, so showing
+  the photo next to it was redundant. `libro.portada` is no longer a field, and the hero is
+  one centered column. The cover survives only in `og.jpg` for link previews.
+
 ## 8. Testing
 
 `node --test tests/` runs with no dependencies and covers:

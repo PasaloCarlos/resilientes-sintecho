@@ -9,8 +9,7 @@
     titulo: '"Resilientes" sintecho',
     subtitulo: 'Etnografía de las tecnologías de poder estadounidense en el posdesastre',
     autor: 'Jesús Vélez Méndez',
-    resena: '',
-    portada: 'assets/portada.jpg'
+    resena: ''
   };
   const libroCrudo = (window.libro && typeof window.libro === 'object') ? window.libro : {};
   const libro = {};
@@ -72,7 +71,6 @@
       el.textContent = libro[el.dataset.libro];
     });
     pintarTitulo(document.querySelector('[data-libro="titulo"]'), libro.titulo);
-    document.querySelector('[data-libro-img]').src = libro.portada;
   }
 
   function tarjeta(p, { pasada, primera }) {

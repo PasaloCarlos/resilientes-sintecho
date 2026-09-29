@@ -53,22 +53,15 @@ a { color: inherit; }
 .errores ul { margin: 0; padding-left: 20px; }
 .errores li { font-family: ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
 
-/* ---------- portada ---------- */
+/* ---------- portada ----------
+   Sin imagen: el título en esténcil sobre la lona ES la portada. */
 .portada {
-  max-width: 960px;
+  max-width: 720px;
   margin: 0 auto;
-  padding: 32px 16px 8px;
-  display: grid;
-  gap: 24px;
-  justify-items: center;
+  padding: 48px 16px 8px;
   text-align: center;
 }
-.portada__img {
-  width: min(60vw, 280px);
-  border-radius: 2px;
-  box-shadow: var(--sombra);
-}
-.portada__texto { max-width: 34rem; }
+.portada__texto { max-width: 36rem; margin: 0 auto; }
 .portada__antetitulo {
   margin: 0 0 4px;
   font-weight: 700;
@@ -80,7 +73,7 @@ a { color: inherit; }
   margin: 0;
   font-family: var(--display);
   font-weight: 800;
-  font-size: clamp(2.6rem, 11vw, 4.5rem);
+  font-size: clamp(2.8rem, 13vw, 5.5rem);
   line-height: .95;
   text-transform: uppercase;
   letter-spacing: .01em;
@@ -130,15 +123,8 @@ a { color: inherit; }
 .portada__resena:empty { display: none; }
 
 @media (min-width: 768px) {
-  .portada {
-    grid-template-columns: 280px 1fr;
-    align-items: center;
-    justify-items: start;
-    text-align: left;
-    padding-top: 56px;
-    gap: 40px;
-  }
-  .portada__autor::before { margin-left: 0; }
+  .portada { padding-top: 80px; }
+  .portada__subtitulo { font-size: 1.1rem; }
 }
 
 /* ---------- agenda ---------- */
