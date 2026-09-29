@@ -26,6 +26,36 @@
     return /^([01]\d|2[0-3]):[0-5]\d$/.test(s);
   }
 
+  // Puerto Rico: UTC−4 todo el año, sin horario de verano.
+  const TZ = 'America/Puerto_Rico';
+  const DESFASE_PR = '-04:00';
+  const DESFASE_PR_MS = -4 * 60 * 60 * 1000;
+  const DURACION_DEFECTO = 120;
+
+  function instante(p) {
+    return new Date(`${p.fecha}T${p.hora}:00${DESFASE_PR}`);
+  }
+
+  function fin(p) {
+    const minutos = esAusente(p.duracionMin) ? DURACION_DEFECTO : p.duracionMin;
+    return new Date(instante(p).getTime() + minutos * 60 * 1000);
+  }
+
+  // Fecha de hoy en PR como "AAAA-MM-DD", sea cual sea la zona del visitante.
+  function hoyPR(ahora) {
+    return new Date(ahora.getTime() + DESFASE_PR_MS).toISOString().slice(0, 10);
+  }
+
+  // Un evento es "próximo" durante todo su día en PR; pasa a "anterior" al día siguiente.
+  function dividir(lista, ahora) {
+    const hoy = hoyPR(ahora);
+    const porInicio = (a, b) => instante(a) - instante(b);
+    return {
+      proximas: lista.filter(p => p.fecha >= hoy).sort(porInicio),
+      anteriores: lista.filter(p => p.fecha < hoy).sort((a, b) => porInicio(b, a))
+    };
+  }
+
   function erroresDePresentacion(p, ruta) {
     if (p === null || typeof p !== 'object' || Array.isArray(p)) {
       return [`${ruta}: debe ser un objeto { ... }`];
@@ -81,7 +111,7 @@
     return { errores, validas };
   }
 
-  const Agenda = { validar };
+  const Agenda = { validar, instante, fin, hoyPR, dividir };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = Agenda;
   if (root) root.Agenda = Agenda;
