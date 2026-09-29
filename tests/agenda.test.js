@@ -349,3 +349,28 @@ test('validar: libro.comprar es opcional y debe empezar con https://', () => {
   assert.deepEqual(A.validar({ ...LIBRO, comprar: 'www.libreriang.com/x' }, []).errores,
     ['libro.comprar: debe empezar con https://']);
 });
+
+// ---------- video del autor (Instagram) ----------
+
+test('urlInstagramEmbed: reel o post de Instagram → dirección /embed/', () => {
+  assert.equal(A.urlInstagramEmbed('https://www.instagram.com/reel/Db9MjswqQj4/'),
+    'https://www.instagram.com/reel/Db9MjswqQj4/embed/');
+  assert.equal(A.urlInstagramEmbed('https://www.instagram.com/reel/Db9MjswqQj4/?igsh=abc123'),
+    'https://www.instagram.com/reel/Db9MjswqQj4/embed/');
+  assert.equal(A.urlInstagramEmbed('https://instagram.com/p/Xy_z-12/'),
+    'https://www.instagram.com/p/Xy_z-12/embed/');
+});
+
+test('urlInstagramEmbed: cualquier otra cosa → null', () => {
+  for (const u of ['https://www.youtube.com/watch?v=1', 'https://www.instagram.com/jesusevelz/',
+    'http://www.instagram.com/reel/Db9MjswqQj4/', 'https://evil.com/instagram.com/reel/X/', '', null]) {
+    assert.equal(A.urlInstagramEmbed(u), null, String(u));
+  }
+});
+
+test('validar: libro.video es opcional y debe ser un reel o post de Instagram', () => {
+  assert.deepEqual(A.validar({ ...LIBRO, video: 'https://www.instagram.com/reel/Db9MjswqQj4/' }, []).errores, []);
+  assert.deepEqual(A.validar({ ...LIBRO, video: '' }, []).errores, []);
+  assert.deepEqual(A.validar({ ...LIBRO, video: 'https://youtu.be/x' }, []).errores,
+    ['libro.video: debe ser un enlace https:// a un reel o post de Instagram']);
+});

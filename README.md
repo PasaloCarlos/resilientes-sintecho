@@ -8,6 +8,12 @@ Sin build, sin dependencias. **"sintecho" es una sola palabra.**
 `comprar` en `window.libro` (en `presentaciones.js`) es el enlace del botón "Comprar el libro".
 Si se borra o se deja vacío, el botón desaparece.
 
+## Video del autor
+
+`video` en `window.libro` es un reel o post de Instagram (`https://www.instagram.com/reel/…/`).
+La página muestra el reproductor de Instagram bajo la reseña, con un enlace "Ver en Instagram" debajo.
+Si se borra o se deja vacío, el video desaparece. El reel tiene que ser público para que se vea.
+
 ## Añadir o cambiar una presentación
 
 Edita **solo** `presentaciones.js`. Copia un bloque `{ ... }` dentro de la lista y cambia los datos:

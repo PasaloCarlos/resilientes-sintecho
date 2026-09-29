@@ -103,6 +103,13 @@
     return partes.filter(p => p.texto !== '');
   }
 
+  // Solo reels y posts de instagram.com: el iframe nunca apunta a otro sitio.
+  function urlInstagramEmbed(url) {
+    if (typeof url !== 'string') return null;
+    const m = /^https:\/\/(?:www\.)?instagram\.com\/(reel|p)\/([A-Za-z0-9_-]+)\/?(?:[?#].*)?$/.exec(url.trim());
+    return m ? `https://www.instagram.com/${m[1]}/${m[2]}/embed/` : null;
+  }
+
   function tituloEvento(libro) {
     return `Presentación: ${libro.titulo} — ${libro.autor}`;
   }
@@ -239,6 +246,9 @@
           !(typeof libro.comprar === 'string' && libro.comprar.startsWith('https://'))) {
         errores.push('libro.comprar: debe empezar con https://');
       }
+      if (!esAusente(libro.video) && !urlInstagramEmbed(libro.video)) {
+        errores.push('libro.video: debe ser un enlace https:// a un reel o post de Instagram');
+      }
     }
 
     if (!Array.isArray(presentaciones)) {
@@ -256,6 +266,7 @@
 
   const Agenda = {
     validar, instante, fin, hoyPR, dividir, horaLegible, formatear, urlMapa, slug, partirTitulo,
+    urlInstagramEmbed,
     tituloEvento, descripcion, utcCompacto, urlGoogle, escaparIcs, plegar, ics, nombreIcs
   };
 

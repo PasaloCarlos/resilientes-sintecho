@@ -72,6 +72,24 @@
     });
     pintarTitulo(document.querySelector('[data-libro="titulo"]'), libro.titulo);
 
+    const embed = A.urlInstagramEmbed(libroCrudo.video);
+    if (embed) {
+      const figura = document.querySelector('.portada__video');
+      const marco = figura.querySelector('iframe');
+      marco.src = embed;
+      figura.querySelector('.portada__video-enlace').href = libroCrudo.video;
+      figura.hidden = false;
+      // El reproductor de Instagram informa su alto con postMessage; así el marco no corta ni deja hueco.
+      window.addEventListener('message', e => {
+        if (e.origin !== 'https://www.instagram.com' || e.source !== marco.contentWindow) return;
+        try {
+          const datos = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+          const alto = datos && datos.type === 'MEASURE' && datos.details && Number(datos.details.height);
+          if (alto > 100) marco.style.height = `${Math.ceil(alto)}px`;
+        } catch (_) { /* mensaje ajeno */ }
+      });
+    }
+
     const comprar = libroCrudo.comprar;
     if (typeof comprar === 'string' && comprar.startsWith('https://')) {
       document.querySelector('.portada__comprar').href = comprar;

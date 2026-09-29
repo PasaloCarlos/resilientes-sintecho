@@ -122,6 +122,18 @@ a { color: inherit; }
 .portada__resena { margin: 16px 0 0; }
 .portada__resena:empty { display: none; }
 .portada__acciones { margin: 20px 0 0; }
+.portada__video { margin: 28px auto 0; width: min(100%, 400px); }
+.portada__video[hidden] { display: none; }
+.portada__video-marco {
+  display: block;
+  width: 100%;
+  height: 720px;               /* hasta que Instagram informe su alto real */
+  border: 0;
+  border-radius: var(--radio);
+  background: var(--blanco);
+  box-shadow: var(--sombra);
+}
+.portada__video figcaption { margin-top: 8px; font-size: .85rem; }
 .boton.boton--comprar { background: var(--rojo); border-color: var(--rojo); font-size: 1rem; padding: 0 22px; }
 .boton.boton--comprar:hover { background: #a8151a; border-color: #a8151a; }
 
