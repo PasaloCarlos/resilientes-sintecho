@@ -22,7 +22,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@700;800&family=Montserrat:wght@400;600;700&display=swap">
-  <link rel="stylesheet" href="styles.css">
+  <!-- GitHub Pages deja que el navegador guarde los archivos 10 min y los teléfonos reusan pestañas viejas.
+       Estilos, código y datos son pequeños: se piden siempre frescos (?t=…) para que un cambio se vea enseguida. -->
+  <script>window.VERSION_CARGA = Date.now();</script>
+  <script>document.write('<link rel="stylesheet" href="styles.css?t=' + window.VERSION_CARGA + '">');</script>
+  <noscript><link rel="stylesheet" href="styles.css"></noscript>
 </head>
 <body>
   <div id="errores" class="errores" role="alert" hidden>
@@ -95,8 +99,14 @@
     </li>
   </template>
 
-  <script src="presentaciones.js"></script>
-  <script src="agenda.js"></script>
-  <script src="app.js"></script>
+  <script>
+    ['presentaciones.js', 'agenda.js', 'app.js'].forEach(function (f) {
+      document.write('<script src="' + f + '?t=' + window.VERSION_CARGA + '"><\/script>');
+    });
+    // Si el teléfono devuelve la pestaña desde memoria después de 10 min, recargar para ver lo último.
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted && Date.now() - window.VERSION_CARGA > 10 * 60 * 1000) location.reload();
+    });
+  </script>
 </body>
 </html>

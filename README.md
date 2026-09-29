@@ -64,6 +64,8 @@ node --test
 
 El sitio vive en **GitHub Pages**: https://pasalocarlos.github.io/resilientes-sintecho/
 Se publica solo desde la rama `main` (raíz) cada vez que haces `git push`; tarda ~1 minuto.
+Estilos, código y `presentaciones.js` se piden con `?t=<hora>` para saltarse la caché; solo `index.html`
+puede quedar guardado hasta 10 min (límite de GitHub Pages), y una pestaña vieja se recarga sola.
 `.nojekyll` evita que GitHub procese los archivos.
 
 `og:image` y `og:url` en `index.html` apuntan a esa dirección (para la vista previa en WhatsApp/Facebook).
