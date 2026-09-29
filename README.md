@@ -52,6 +52,5 @@ node --test
 
 1. Crea un repo en GitHub y haz `git push -u origin main`.
 2. En Netlify, **Add new site → Import from Git**, elige el repo. No build command; publish directory `.` (ya está en `netlify.toml`).
-3. Cuando exista la URL final, cambia en `index.html` `og:image` a la URL absoluta
-   (ej. `https://<sitio>.netlify.app/assets/og.jpg`) y añade `<meta property="og:url" content="https://<sitio>.netlify.app/">`,
-   para que WhatsApp y Facebook muestren la portada al compartir.
+3. Hecho el 2026-09-29: el sitio es **https://resilientes-sintecho.netlify.app** y `og:image`/`og:url` ya apuntan ahí.
+   Si algún día cambia el dominio, actualiza esas dos etiquetas en `index.html`.

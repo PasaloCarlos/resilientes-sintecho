@@ -11,3 +11,16 @@
   for = "/"
   [headers.values]
     Cache-Control = "no-cache"
+
+# La carpeta publicada es la raíz del repo: que los documentos de trabajo y las pruebas no se sirvan.
+[[redirects]]
+  from = "/docs/*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/tests/*"
+  to = "/404"
+  status = 404
+  force = true
