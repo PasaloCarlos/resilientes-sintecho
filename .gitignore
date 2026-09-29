@@ -1,0 +1,4 @@
+# Originales pesados de imágenes: solo se commitean las versiones web de assets/
+*-original.*
+Thumbs.db
+.DS_Store

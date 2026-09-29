@@ -1,0 +1,13 @@
+[build]
+  publish = "."
+
+# Los scripts cambian con cada fecha nueva: que el navegador siempre revalide.
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache"
