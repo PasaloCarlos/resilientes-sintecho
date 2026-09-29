@@ -91,6 +91,95 @@
       .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   }
 
+  function tituloEvento(libro) {
+    return `Presentación: ${libro.titulo} — ${libro.autor}`;
+  }
+
+  function descripcion(p, urlPagina) {
+    const lineas = [];
+    if (Array.isArray(p.invitados) && p.invitados.length) lineas.push(`Con: ${p.invitados.join(', ')}`);
+    if (esTextoNoVacio(p.notas)) lineas.push(p.notas);
+    lineas.push(`Más información: ${urlPagina}`);
+    return lineas.join('\n');
+  }
+
+  function ubicacion(p) {
+    return `${p.lugar}, ${p.direccion}`;
+  }
+
+  function utcCompacto(fecha) {
+    return fecha.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  }
+
+  function urlGoogle(p, libro, urlPagina) {
+    const q = new URLSearchParams({
+      action: 'TEMPLATE',
+      text: tituloEvento(libro),
+      dates: `${utcCompacto(instante(p))}/${utcCompacto(fin(p))}`,
+      details: descripcion(p, urlPagina),
+      location: ubicacion(p),
+      ctz: TZ
+    });
+    return `https://calendar.google.com/calendar/render?${q.toString()}`;
+  }
+
+  // RFC 5545 §3.3.11
+  function escaparIcs(s) {
+    return String(s)
+      .replace(/\\/g, '\\\\')
+      .replace(/;/g, '\\;')
+      .replace(/,/g, '\\,')
+      .replace(/\r?\n/g, '\\n');
+  }
+
+  // RFC 5545 §3.1: líneas de ≤75 octetos; la continuación empieza con un espacio.
+  // Se recorre por caracteres (for…of) para nunca partir un carácter multibyte.
+  const codificador = new TextEncoder();
+  function plegar(linea) {
+    const partes = [];
+    let actual = '';
+    let octetos = 0;
+    for (const ch of linea) {
+      const n = codificador.encode(ch).length;
+      if (octetos + n > 75) {
+        partes.push(actual);
+        actual = ' ' + ch;
+        octetos = 1 + n;
+      } else {
+        actual += ch;
+        octetos += n;
+      }
+    }
+    partes.push(actual);
+    return partes.join('\r\n');
+  }
+
+  function ics(p, libro, urlPagina, ahora = new Date()) {
+    const uid = `${p.fecha}-${p.hora.replace(':', '')}-${slug(p.lugar)}@resilientes-sintecho`;
+    const lineas = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//resilientes-sintecho//agenda//ES',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      `UID:${uid}`,
+      `DTSTAMP:${utcCompacto(ahora)}`,
+      `DTSTART:${utcCompacto(instante(p))}`,
+      `DTEND:${utcCompacto(fin(p))}`,
+      `SUMMARY:${escaparIcs(tituloEvento(libro))}`,
+      `LOCATION:${escaparIcs(ubicacion(p))}`,
+      `DESCRIPTION:${escaparIcs(descripcion(p, urlPagina))}`,
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ];
+    return lineas.map(plegar).join('\r\n') + '\r\n';
+  }
+
+  function nombreIcs(p) {
+    return `presentacion-${p.fecha}.ics`;
+  }
+
   function erroresDePresentacion(p, ruta) {
     if (p === null || typeof p !== 'object' || Array.isArray(p)) {
       return [`${ruta}: debe ser un objeto { ... }`];
@@ -146,7 +235,10 @@
     return { errores, validas };
   }
 
-  const Agenda = { validar, instante, fin, hoyPR, dividir, horaLegible, formatear, urlMapa, slug };
+  const Agenda = {
+    validar, instante, fin, hoyPR, dividir, horaLegible, formatear, urlMapa, slug,
+    tituloEvento, descripcion, utcCompacto, urlGoogle, escaparIcs, plegar, ics, nombreIcs
+  };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = Agenda;
   if (root) root.Agenda = Agenda;

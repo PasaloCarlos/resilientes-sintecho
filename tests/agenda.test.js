@@ -210,3 +210,85 @@ test('slug: sin acentos ni símbolos (Review Focus 3)', () => {
   assert.equal(A.slug('  Café & Libros, Río Piedras! '), 'cafe-libros-rio-piedras');
   assert.equal(A.slug('Ñandú'), 'nandu');
 });
+
+// ---------- calendario ----------
+
+const URL_PAGINA = 'https://resilientes-sintecho.netlify.app/';
+const desplegar = t => t.replace(/\r\n /g, '');
+const bytes = s => Buffer.byteLength(s, 'utf8');
+
+test('tituloEvento y descripcion', () => {
+  assert.equal(A.tituloEvento(LIBRO), 'Presentación: "Resilientes" sintecho — Jesús Vélez Méndez');
+  assert.equal(A.descripcion(base({ invitados: ['Ana', 'Luis'], notas: 'Entrada libre' }), URL_PAGINA),
+    'Con: Ana, Luis\nEntrada libre\nMás información: ' + URL_PAGINA);
+  assert.equal(A.descripcion(base({ invitados: [], notas: '' }), URL_PAGINA),
+    'Más información: ' + URL_PAGINA);
+});
+
+test('utcCompacto', () => {
+  assert.equal(A.utcCompacto(new Date('2026-10-18T23:00:00.000Z')), '20261018T230000Z');
+});
+
+test('urlGoogle: parámetros completos y en UTC', () => {
+  const u = new URL(A.urlGoogle(base({ invitados: ['Ana'], notas: 'Entrada libre' }), LIBRO, URL_PAGINA));
+  assert.equal(u.origin + u.pathname, 'https://calendar.google.com/calendar/render');
+  const q = u.searchParams;
+  assert.equal(q.get('action'), 'TEMPLATE');
+  assert.equal(q.get('text'), 'Presentación: "Resilientes" sintecho — Jesús Vélez Méndez');
+  assert.equal(q.get('dates'), '20261018T230000Z/20261019T010000Z');
+  assert.equal(q.get('location'), 'Librería Mágica, Calle Ponce de León 1126, San Juan');
+  assert.equal(q.get('details'), 'Con: Ana\nEntrada libre\nMás información: ' + URL_PAGINA);
+  assert.equal(q.get('ctz'), 'America/Puerto_Rico');
+});
+
+test('escaparIcs: \\ ; , y saltos de línea', () => {
+  assert.equal(A.escaparIcs('a\\b;c,d\ne\r\nf'), 'a\\\\b\\;c\\,d\\ne\\nf');
+});
+
+test('ics: estructura, CRLF, UTC y escape (Review Focus 3)', () => {
+  const t = A.ics(base({ duracionMin: 90, notas: 'Entrada libre; hay café' }), LIBRO, URL_PAGINA,
+    new Date('2026-09-29T12:00:00Z'));
+  assert.ok(t.startsWith('BEGIN:VCALENDAR\r\n'));
+  assert.ok(t.endsWith('END:VCALENDAR\r\n'));
+  assert.ok(!/[^\r]\n/.test(t), 'todo salto de línea es CRLF');
+  const lineas = desplegar(t).split('\r\n');
+  for (const l of [
+    'VERSION:2.0',
+    'PRODID:-//resilientes-sintecho//agenda//ES',
+    'BEGIN:VEVENT',
+    'UID:2026-10-18-1900-libreria-magica@resilientes-sintecho',
+    'DTSTAMP:20260929T120000Z',
+    'DTSTART:20261018T230000Z',
+    'DTEND:20261019T003000Z',
+    'SUMMARY:Presentación: "Resilientes" sintecho — Jesús Vélez Méndez',
+    'LOCATION:Librería Mágica\\, Calle Ponce de León 1126\\, San Juan',
+    'DESCRIPTION:Entrada libre\\; hay café\\nMás información: ' + URL_PAGINA,
+    'END:VEVENT'
+  ]) assert.ok(lineas.includes(l), `falta la línea: ${l}`);
+});
+
+test('ics: mismo día y lugar a distinta hora → UID distintos (Review Focus 4)', () => {
+  const uid = t => desplegar(t).split('\r\n').find(l => l.startsWith('UID:'));
+  const a = A.ics(base({ hora: '10:00' }), LIBRO, URL_PAGINA);
+  const b = A.ics(base({ hora: '19:00' }), LIBRO, URL_PAGINA);
+  assert.notEqual(uid(a), uid(b));
+});
+
+test('plegar: ≤75 octetos por línea física sin partir caracteres multibyte (Review Focus 5)', () => {
+  const larga = 'DESCRIPTION:' + 'á'.repeat(100) + '🙂'.repeat(20);
+  const plegada = A.plegar(larga);
+  for (const fisica of plegada.split('\r\n')) assert.ok(bytes(fisica) <= 75, `${bytes(fisica)} octetos`);
+  assert.equal(desplegar(plegada), larga);
+  assert.equal(A.plegar('corta'), 'corta');
+});
+
+test('ics: invitados y notas largos quedan plegados y se recuperan', () => {
+  const invitados = Array.from({ length: 8 }, (_, i) => `Invitada Número ${i + 1} (Universidad de Puerto Rico)`);
+  const t = A.ics(base({ invitados }), LIBRO, URL_PAGINA);
+  for (const fisica of t.split('\r\n')) assert.ok(bytes(fisica) <= 75);
+  assert.ok(desplegar(t).includes('DESCRIPTION:Con: ' + invitados.map(A.escaparIcs).join('\\, ')));
+});
+
+test('nombreIcs', () => {
+  assert.equal(A.nombreIcs(base()), 'presentacion-2026-10-18.ics');
+});
