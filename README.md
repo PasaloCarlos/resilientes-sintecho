@@ -48,9 +48,14 @@ node --test
 - `index.html`, `styles.css` — estructura y apariencia.
 - `assets/` — imagen para compartir (`og.jpg`) y la lona azul del fondo (`lona.jpg`), ambas recortadas de la portada original. La página no muestra la foto de la portada: el título en esténcil sobre la lona hace ese papel. Cómo regenerarlas: ver el plan en `docs/superpowers/plans/`.
 
-## Publicar (primera vez)
+## Publicar
 
-1. Crea un repo en GitHub y haz `git push -u origin main`.
-2. En Netlify, **Add new site → Import from Git**, elige el repo. No build command; publish directory `.` (ya está en `netlify.toml`).
-3. Hecho el 2026-09-29: el sitio es **https://resilientes-sintecho.netlify.app** y `og:image`/`og:url` ya apuntan ahí.
-   Si algún día cambia el dominio, actualiza esas dos etiquetas en `index.html`.
+El sitio vive en **GitHub Pages**: https://pasalocarlos.github.io/resilientes-sintecho/
+Se publica solo desde la rama `main` (raíz) cada vez que haces `git push`; tarda ~1 minuto.
+`.nojekyll` evita que GitHub procese los archivos.
+
+`og:image` y `og:url` en `index.html` apuntan a esa dirección (para la vista previa en WhatsApp/Facebook).
+Si el sitio se muda (dominio propio o Netlify), actualiza esas dos etiquetas.
+
+`netlify.toml` queda por si se vuelve a Netlify (el sitio `resilientes-sintecho` existe allí, pero la
+cuenta respondía 429 a todas las visitas el 2026-09-29).
