@@ -112,8 +112,8 @@ test('validar: presentaciones que no es lista', () => {
 
 test('validar: libro faltante o incompleto', () => {
   assert.deepEqual(A.validar(undefined, []).errores, ['libro: falta window.libro']);
-  const { resena, ...sinResena } = LIBRO;
-  assert.deepEqual(A.validar(sinResena, []).errores, ['libro.resena: requerido']);
+  const { autor, ...sinAutor } = LIBRO;
+  assert.deepEqual(A.validar(sinAutor, []).errores, ['libro.autor: requerido']);
 });
 
 // ---------- tiempo ----------
@@ -373,4 +373,11 @@ test('validar: libro.video es opcional y debe ser un reel o post de Instagram', 
   assert.deepEqual(A.validar({ ...LIBRO, video: '' }, []).errores, []);
   assert.deepEqual(A.validar({ ...LIBRO, video: 'https://youtu.be/x' }, []).errores,
     ['libro.video: debe ser un enlace https:// a un reel o post de Instagram']);
+});
+
+// ---------- sin reseña en la página ----------
+
+test('validar: libro ya no necesita reseña (el video ocupa ese lugar)', () => {
+  const { resena, ...sinResena } = LIBRO;
+  assert.deepEqual(A.validar(sinResena, []).errores, []);
 });

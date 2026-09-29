@@ -60,8 +60,10 @@ a { color: inherit; }
   margin: 0 auto;
   padding: 48px 16px 8px;
   text-align: center;
+  display: grid;
+  grid-template-areas: "texto" "video" "acciones";
 }
-.portada__texto { max-width: 36rem; margin: 0 auto; }
+.portada__texto { grid-area: texto; max-width: 36rem; margin: 0 auto; }
 .portada__antetitulo {
   margin: 0 0 4px;
   font-weight: 700;
@@ -119,10 +121,8 @@ a { color: inherit; }
   margin: 0 auto 10px;
   background: var(--rojo);
 }
-.portada__resena { margin: 16px 0 0; }
-.portada__resena:empty { display: none; }
-.portada__acciones { margin: 20px 0 0; }
-.portada__video { margin: 28px auto 0; width: min(100%, 400px); }
+.portada__acciones { grid-area: acciones; margin: 20px 0 0; }
+.portada__video { grid-area: video; margin: 28px auto 0; width: min(100%, 400px); }
 .portada__video[hidden] { display: none; }
 .portada__video-marco {
   display: block;
@@ -137,6 +137,19 @@ a { color: inherit; }
 .boton.boton--comprar { background: var(--rojo); border-color: var(--rojo); font-size: 1rem; padding: 0 22px; }
 .boton.boton--comprar:hover { background: #a8151a; border-color: #a8151a; }
 
+/* Escritorio: el título y el video lado a lado, para que las fechas queden cerca del tope. */
+@media (min-width: 960px) {
+  .portada {
+    max-width: 1040px;
+    grid-template-columns: 1fr 380px;
+    grid-template-areas: "texto video" "acciones video";
+    grid-template-rows: auto 1fr;
+    column-gap: 56px;
+    align-items: start;
+  }
+  .portada__texto { align-self: end; }
+  .portada__video { margin-top: 0; }
+}
 @media (min-width: 768px) {
   .portada { padding-top: 80px; }
   .portada__subtitulo { font-size: 1.1rem; }

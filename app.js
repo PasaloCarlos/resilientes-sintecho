@@ -8,8 +8,7 @@
   const LIBRO_DEFECTO = {
     titulo: '"Resilientes" sintecho',
     subtitulo: 'Etnografía de las tecnologías de poder estadounidense en el posdesastre',
-    autor: 'Jesús Vélez Méndez',
-    resena: ''
+    autor: 'Jesús Vélez Méndez'
   };
   const libroCrudo = (window.libro && typeof window.libro === 'object') ? window.libro : {};
   const libro = {};

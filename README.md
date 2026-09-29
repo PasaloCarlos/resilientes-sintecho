@@ -11,7 +11,8 @@ Si se borra o se deja vacío, el botón desaparece.
 ## Video del autor
 
 `video` en `window.libro` es un reel o post de Instagram (`https://www.instagram.com/reel/…/`).
-La página muestra el reproductor de Instagram bajo la reseña, con un enlace "Ver en Instagram" debajo.
+La página muestra el reproductor de Instagram bajo el nombre del autor (en escritorio, al lado del título), con un enlace "Ver en Instagram" debajo.
+La reseña del libro ya no aparece en la página: vive en `<meta name="description">` de `index.html` (lo que muestran los buscadores).
 Si se borra o se deja vacío, el video desaparece. El reel tiene que ser público para que se vea.
 
 ## Añadir o cambiar una presentación
