@@ -54,7 +54,8 @@ resilientes-sintecho/
 ├── app.js              ← DOM: reads the data, calls agenda.js, renders, wires the calendar menu
 ├── assets/
 │   ├── portada.jpg     ← cover, resized for the web (≤ 1200px on the long side, ≤ 300 KB)
-│   └── og.jpg          ← 1200×630 share image cut from the cover
+│   ├── og.jpg          ← 1200×630 share image cut from the cover
+│   └── lona.jpg        ← clean blue-tarp texture cut from the cover (page background)
 ├── tests/
 │   └── agenda.test.js  ← node --test, no dependencies
 ├── netlify.toml        ← publish dir "." and cache headers
@@ -162,8 +163,13 @@ skipped. Valid entries still render, so one typo never blanks the page.
 ## 7. Visual direction
 
 The design takes its cues from the cover (a blue tarp, white stencil type and red accents):
-- **Background:** deep tarp blue (≈ `#1c4fd6`), with a subtle darker gradient. No photo
-  texture in v1, to keep the page light on phones.
+- **Background (amended 2026-09-29 at the owner's request):** the page background is the
+  **blue tarp itself**. A clean region of the cover (no text, grommet or seal: x 1100–1800,
+  y 1650–2650 of the 1800×2700 original) becomes `assets/lona.jpg` (≤ 250 KB). It is painted
+  on a fixed full-viewport layer (`body::before`, `background-size: cover`), not with
+  `background-attachment: fixed`, which iOS ignores. A translucent deep-blue overlay sits on
+  top so white text keeps AA contrast over the tarp's light creases. The solid tarp blue
+  (≈ `#1c4fd6`) is the fallback while the image loads.
 - **Text on the blue:** white. Accent red (≈ `#e3262b`) is used only for the date blocks,
   the thin rule under the author and the "Próxima" badge. It is never used for body text.
 - **Fonts** (from Google Fonts):

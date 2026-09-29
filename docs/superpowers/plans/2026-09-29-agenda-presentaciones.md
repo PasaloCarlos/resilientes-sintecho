@@ -813,7 +813,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 5: The page — images, data file, HTML, CSS, rendering
 
 **Files:**
-- Create: `assets/portada.jpg`, `assets/og.jpg` (generated from `C:\Users\carlosfigueroa\Downloads\jesuslibro-1 copy.jpg`, which is 1800×2700)
+- Create: `assets/portada.jpg`, `assets/og.jpg`, `assets/lona.jpg` (generated from `C:\Users\carlosfigueroa\Downloads\jesuslibro-1 copy.jpg`, which is 1800×2700)
 - Create: `presentaciones.js`, `index.html`, `styles.css`, `app.js`
 
 **Interfaces:**
@@ -836,12 +836,15 @@ portada.save("assets/portada.jpg", "JPEG", quality=80, optimize=True, progressiv
 ancho = src.resize((1200, 1800), Image.LANCZOS)
 top = int(1800 * 0.235)
 ancho.crop((0, top, 1200, top + 630)).save("assets/og.jpg", "JPEG", quality=82, optimize=True, progressive=True)
+# Page background: clean tarp region (no text, grommet or seal), slightly enlarged
+lona = src.crop((1100, 1650, 1800, 2650)).resize((1000, 1429), Image.LANCZOS)
+lona.save("assets/lona.jpg", "JPEG", quality=70, optimize=True, progressive=True)
 EOF
 ls -l assets
-python -c "from PIL import Image; [print(f, Image.open('assets/'+f).size) for f in ('portada.jpg','og.jpg')]"
+python -c "from PIL import Image; [print(f, Image.open('assets/'+f).size) for f in ('portada.jpg','og.jpg','lona.jpg')]"
 ```
 
-Expected: `portada.jpg (800, 1200)` at ≤ 300 KB, and `og.jpg (1200, 630)`. If `portada.jpg` is over 300 KB, re-run with `quality=72`.
+Expected: `portada.jpg (800, 1200)` at ≤ 300 KB, `og.jpg (1200, 630)`, and `lona.jpg (1000, 1429)` at ≤ 250 KB (if over, re-run with `quality=60`). If `portada.jpg` is over 300 KB, re-run with `quality=72`.
 
 - [ ] **Step 2: Check the share image visually**
 
@@ -1037,7 +1040,18 @@ body {
   font-size: 1rem;
   line-height: 1.5;
   color: var(--blanco);
-  background: linear-gradient(180deg, var(--azul) 0%, var(--azul-hondo) 100%) var(--azul-hondo);
+  background: var(--azul);
+}
+/* Fondo: la lona azul de la portada, fija al viewport (iOS ignora background-attachment: fixed). */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(14, 42, 134, .35) 0%, rgba(14, 42, 134, .6) 100%),
+    url('assets/lona.jpg') center / cover no-repeat,
+    var(--azul);
 }
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
@@ -1451,13 +1465,14 @@ Run: `python -m http.server 8000` (in the background) and open http://localhost:
    - The Anteriores section is hidden.
    - Revert afterwards.
 8. **Fonts:** the title renders in the stencil display face.
+9. **Tarp background:** the tarp texture fills the viewport behind everything, stays put while scrolling, and white text over its lightest creases is still easy to read (check the hero and section headings in the screenshot).
 
 Take a screenshot at 360px and at 1280px and keep them for the review.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add assets/portada.jpg assets/og.jpg presentaciones.js index.html styles.css app.js
+git add assets/portada.jpg assets/og.jpg assets/lona.jpg presentaciones.js index.html styles.css app.js
 git commit -m "feat: agenda page — hero, upcoming/past cards, calendar menu, example data
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
