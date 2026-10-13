@@ -7,6 +7,16 @@ const vm = require('node:vm');
 
 const DESFASES = { 'America/Puerto_Rico': -4, UTC: 0 };
 
+// Como Sheets al escribir un valor: "'" al inicio fuerza texto (y no se guarda);
+// = + - @ al inicio se toma como fórmula; "3-4" se toma como fecha.
+function comoSheets(v) {
+  if (typeof v !== 'string' || v === '') return v;
+  if (v[0] === "'") return v.slice(1);
+  if (/^[=+\-@]/.test(v)) return '#ERROR!';
+  if (/^\d{1,2}-\d{1,2}$/.test(v)) return new Date(Date.UTC(2026, Number(v.split('-')[1]) - 1, Number(v.split('-')[0])));
+  return v;
+}
+
 function crearHoja() {
   const filas = [];
   const formatos = [];
@@ -14,11 +24,11 @@ function crearHoja() {
     filas,
     formatos,
     getLastRow: () => filas.length,
-    appendRow: fila => { filas.push(Array.from(fila)); },   // Array.from: arreglo del reino de las pruebas, no del vm
+    appendRow: fila => { filas.push(Array.from(fila, comoSheets)); },   // Array.from: arreglo del reino de las pruebas, no del vm
     getDataRange: () => ({ getValues: () => filas.map(f => f.slice()) }),
     getRange: (fila, columna) => {
       if (typeof fila === 'string') return { setNumberFormat: f => { formatos.push([fila, f]); } };
-      return { setValues: valores => { valores.forEach((v, i) => { filas[fila - 1 + i] = Array.from(v); }); } };
+      return { setValues: valores => { valores.forEach((v, i) => { filas[fila - 1 + i] = Array.from(v, comoSheets); }); } };
     },
     deleteRow: n => { filas.splice(n - 1, 1); },
     setFrozenRows: () => {}

@@ -107,10 +107,14 @@ function leerTodo() {
   var valores = hoja.getDataRange().getValues();
   var presentaciones = [];
   var invalidas = [];
+  var vistos = {};
   for (var i = 1; i < valores.length; i++) {
     if (valores[i].every(function (v) { return texto(v) === ''; })) continue;   // fila vacía
     var p = deFila(valores[i], zona);
-    var errores = p.id ? Agenda.validarPresentacion(p) : ['id: falta; bórrala y créala desde el admin'];
+    var errores = !p.id ? ['id: falta; bórrala y créala desde el admin']
+      : vistos[p.id] ? ['id: repetido; borra esta copia y créala desde el admin']   // fila copiada a mano
+      : Agenda.validarPresentacion(p);
+    if (p.id) vistos[p.id] = true;
     if (errores.length) invalidas.push({ fila: i + 1, id: p.id || '', errores: errores });
     else presentaciones.push(p);
   }
@@ -151,7 +155,13 @@ function deFila(fila, zona) {
 
 function aFila(p) {
   return [p.id, p.fecha, p.hora, p.duracionMin || '', p.lugar, p.direccion, p.mapa || '',
-    (p.invitados || []).join('\n'), p.masInfo || '', p.notas || '', new Date()];
+    (p.invitados || []).join('\n'), p.masInfo || '', p.notas || ''].map(comoTexto).concat([new Date()]);
+}
+
+// Un apóstrofo al inicio hace que Sheets guarde el valor como texto (y no forma parte del valor):
+// sin él, "- Ana" o "=..." se vuelven fórmulas y "3-4" una fecha.
+function comoTexto(v) {
+  return typeof v === 'string' && v !== '' ? "'" + v : v;
 }
 
 // Número de fila del Sheet (2 = primera de datos), o 0.

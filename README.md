@@ -96,6 +96,9 @@ La página pública las lee del Sheet: no hace falta tocar código ni hacer push
   Si una fila queda mal, la página la ignora y el admin la muestra en un aviso amarillo con el problema.
 - **Bloqueo por intentos:** tras 10 claves equivocadas, el admin dice "Demasiados intentos. Espera 10 minutos.",
   incluso con la clave correcta.
+- **Si alguien bloquea el admin a propósito** (manda claves malas una y otra vez, porque la URL `/exec` es pública):
+  crea una implementación **nueva** (Implementar → Nueva implementación), pon la URL nueva en
+  `agendaConfig.url`, haz push y archiva la implementación vieja. La URL vieja deja de funcionar.
 - **Si Google no responde:** la página muestra la última copia guardada en cada navegador o,
   en una primera visita, "No pudimos cargar las fechas." con un botón Reintentar.
 

@@ -144,3 +144,26 @@ test('doGet: filas inválidas van a "invalidas", las vacías se ignoran, sin id 
     { fila: 4, id: '', errores: ['id: falta; bórrala y créala desde el admin'] }
   ] });
 });
+
+// ---------- hallazgos de la revisión final ----------
+
+test('crear/editar: texto que Sheets tomaría por fórmula o fecha se guarda como texto', () => {
+  const e = crearEntorno();
+  const raro = { ...BUENA, lugar: '=IMPORTXML("https://x.org","//a")', direccion: '3-4',
+    invitados: '- Ana (moderadora)\n+ Luis', notas: '@todos' };
+  const { presentacion } = crear(e, raro);
+  const esperado = { ...BUENA, lugar: '=IMPORTXML("https://x.org","//a")', direccion: '3-4',
+    invitados: ['- Ana (moderadora)', '+ Luis'], notas: '@todos', id: presentacion.id };
+  assert.deepEqual(e.get().presentaciones, [esperado]);
+  e.post({ accion: 'editar', clave: 'secreta', id: presentacion.id, presentacion: { ...raro, hora: '10:00' } });
+  assert.deepEqual(e.get().presentaciones, [{ ...esperado, hora: '10:00' }]);
+});
+
+test('doGet: un id repetido (fila copiada a mano) deja la copia como inválida', () => {
+  const e = crearEntorno();
+  const { presentacion } = crear(e, BUENA);
+  e.hoja().filas.push([presentacion.id, '2026-11-01', '18:00', '', 'Copia', 'D', '', '', '', '', '']);
+  const r = e.get();
+  assert.deepEqual(r.presentaciones.map(p => p.lugar), ['Librería Mágica']);
+  assert.deepEqual(r.invalidas, [{ fila: 3, id: presentacion.id, errores: ['id: repetido; borra esta copia y créala desde el admin'] }]);
+});

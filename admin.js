@@ -101,6 +101,19 @@
 
   $('salir').addEventListener('click', () => { olvidarClave(); location.reload(); });
 
+  // La clave guardada dejó de servir (Carlos la cambió): de vuelta a "Entrar", sin la clave vieja.
+  function volverAEntrar() {
+    olvidarClave();
+    clave = '';
+    cerrarFormulario();
+    $('panel').hidden = true;
+    $('salir').hidden = true;
+    $('entrar').hidden = false;
+    $('clave').value = '';
+    mostrarErrorEntrar('La clave cambió. Escríbela otra vez.');
+    $('clave').focus();
+  }
+
   // ---------- lista ----------
   async function recargar() {
     let datos;
@@ -180,6 +193,7 @@
         } else {
           boton.disabled = false;
           boton.textContent = 'Sí, borrar';
+          if (r.error === 'Clave incorrecta.') { volverAEntrar(); break; }
           avisar(r.error, 'error');
           if (r.error === 'Esa presentación ya no existe.') await recargar();
         }
@@ -267,11 +281,17 @@
       await recargar();
       return;
     }
+    if (r.error === 'Clave incorrecta.') { volverAEntrar(); return; }
+    if (r.error === 'Esa presentación ya no existe.') {
+      cerrarFormulario();
+      avisar(r.error, 'error');   // fuera del formulario, que se acaba de cerrar
+      await recargar();
+      return;
+    }
     if (r.campos) mostrarErrores(r.campos);   // el formulario conserva lo escrito
     const error = $('error-formulario');
     error.textContent = r.error;
     error.hidden = false;
-    if (r.error === 'Esa presentación ya no existe.') { cerrarFormulario(); await recargar(); }
   });
 
   // ---------- arranque ----------
