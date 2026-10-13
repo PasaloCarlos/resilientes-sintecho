@@ -193,20 +193,58 @@
     boton.focus();
   });
 
+  // ---------- agenda: se puede pintar más de una vez (copia guardada → Sheet) ----------
+  const olProximas = document.getElementById('proximas');
+  const olAnteriores = document.getElementById('anteriores');
+  const estadoCargando = document.getElementById('cargando');
+  const estadoSinDatos = document.getElementById('sin-datos');
+  const sinProximas = document.getElementById('sin-proximas');
+
+  function pintarAgenda(lista) {
+    estadoCargando.hidden = true;
+    estadoSinDatos.hidden = true;
+    const validas = lista.filter(p => A.validarPresentacion(p).length === 0);
+    const { proximas, anteriores } = A.dividir(validas, new Date());
+    olProximas.replaceChildren(...proximas.map((p, i) => tarjeta(p, { pasada: false, primera: i === 0 })));
+    sinProximas.hidden = proximas.length > 0;
+    olAnteriores.replaceChildren(...anteriores.map(p => tarjeta(p, { pasada: true, primera: false })));
+    document.getElementById('bloque-anteriores').hidden = anteriores.length === 0;
+  }
+
+  function cargando() {
+    estadoCargando.hidden = false;
+    estadoSinDatos.hidden = true;
+    sinProximas.hidden = true;
+  }
+
+  function sinDatos() {
+    estadoCargando.hidden = true;
+    estadoSinDatos.hidden = false;
+    sinProximas.hidden = true;
+  }
+
+  function almacenLocal() {
+    try { return window.localStorage; } catch (_) { return null; }
+  }
+
+  function cargar() {
+    window.Fuente.cargarPresentaciones({
+      url: (window.agendaConfig && window.agendaConfig.url) || '',
+      fetchFn: url => fetch(url),
+      almacen: almacenLocal(),
+      respaldo: Array.isArray(window.presentaciones) ? window.presentaciones : [],
+      esperaMs: 6000,
+      pintar: pintarAgenda,
+      cargando,
+      sinDatos
+    });
+  }
+
   // ---------- arranque ----------
-  const { errores, validas } = A.validar(window.libro, window.presentaciones);
+  // El aviso rojo es solo para errores de presentaciones.js (lo edita Carlos), nunca por filas del Sheet.
+  const { errores } = A.validar(window.libro, window.presentaciones);
   if (errores.length) mostrarErrores(errores);
   pintarLibro();
-
-  const { proximas, anteriores } = A.dividir(validas, new Date());
-
-  const olProximas = document.getElementById('proximas');
-  proximas.forEach((p, i) => olProximas.appendChild(tarjeta(p, { pasada: false, primera: i === 0 })));
-  document.getElementById('sin-proximas').hidden = proximas.length > 0;
-
-  if (anteriores.length) {
-    const olAnteriores = document.getElementById('anteriores');
-    anteriores.forEach(p => olAnteriores.appendChild(tarjeta(p, { pasada: true, primera: false })));
-    document.getElementById('bloque-anteriores').hidden = false;
-  }
+  document.getElementById('reintentar').addEventListener('click', cargar);
+  cargar();
 })();

@@ -19,6 +19,11 @@
    Si algo está mal escrito, la página muestra un aviso rojo diciendo qué y dónde.
 */
 
+// Dirección /exec del Apps Script del Google Sheet (README → "Admin").
+// Vacía: la página usa la lista window.presentaciones de abajo.
+// Puesta: las fechas salen del Sheet (las maneja Jesús en admin.html) y la lista de abajo es solo respaldo.
+window.agendaConfig = { url: '' };
+
 window.libro = {
   titulo: '"Resilientes" sintecho',
   subtitulo: 'Etnografía de las tecnologías de poder estadounidense en el posdesastre',

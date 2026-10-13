@@ -166,6 +166,8 @@ a { color: inherit; }
   text-align: center;
   font-weight: 600;
 }
+.agenda__vacio p { margin: 0 0 12px; }
+.agenda__vacio[hidden] { display: none; }
 
 .tarjetas { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
 

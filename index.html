@@ -55,6 +55,11 @@
     <section aria-labelledby="t-proximas">
       <h2 id="t-proximas" class="agenda__titulo">Próximas presentaciones</h2>
       <ol id="proximas" class="tarjetas"></ol>
+      <p id="cargando" class="agenda__vacio" hidden>Cargando fechas…</p>
+      <div id="sin-datos" class="agenda__vacio" hidden>
+        <p>No pudimos cargar las fechas.</p>
+        <button type="button" id="reintentar" class="boton">Reintentar</button>
+      </div>
       <p id="sin-proximas" class="agenda__vacio" hidden>Pronto anunciaremos nuevas fechas.</p>
     </section>
 
@@ -100,7 +105,7 @@
   </template>
 
   <script>
-    ['presentaciones.js', 'agenda.js', 'app.js'].forEach(function (f) {
+    ['presentaciones.js', 'agenda.js', 'fuente.js', 'app.js'].forEach(function (f) {
       document.write('<script src="' + f + '?t=' + window.VERSION_CARGA + '"><\/script>');
     });
     // Si el teléfono devuelve la pestaña desde memoria después de 10 min, recargar para ver lo último.
