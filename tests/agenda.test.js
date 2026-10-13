@@ -381,3 +381,49 @@ test('validar: libro ya no necesita reseña (el video ocupa ese lugar)', () => {
   const { resena, ...sinResena } = LIBRO;
   assert.deepEqual(A.validar(sinResena, []).errores, []);
 });
+
+// ---------- reglas compartidas con el Apps Script ----------
+
+test('validarPresentacion: los mismos problemas que validar(), sin ruta', () => {
+  assert.deepEqual(A.validarPresentacion(base()), []);
+  assert.deepEqual(A.validarPresentacion({ hora: '7:00' }), [
+    'fecha: requerido', 'lugar: requerido', 'direccion: requerido',
+    'hora: debe ser HH:MM en 24 horas (ej. 19:00)'
+  ]);
+  assert.deepEqual(A.validarPresentacion(null), ['debe ser un objeto { ... }']);
+});
+
+test('topes: lugar 120, notas 200, invitados 10 de 120', () => {
+  assert.deepEqual(A.validarPresentacion(base({ lugar: 'x'.repeat(120) })), []);
+  assert.deepEqual(A.validarPresentacion(base({ lugar: 'x'.repeat(121) })), ['lugar: máximo 120 caracteres']);
+  assert.deepEqual(A.validarPresentacion(base({ notas: 'n'.repeat(201) })), ['notas: máximo 200 caracteres']);
+  const once = Array.from({ length: 11 }, (_, i) => `Invitado ${i}`);
+  assert.deepEqual(A.validarPresentacion(base({ invitados: once })),
+    ['invitados: máximo 10 invitados de 120 caracteres']);
+  assert.deepEqual(A.validar(LIBRO, [base({ lugar: 'x'.repeat(121) })]).errores,
+    ['presentaciones[0].lugar: máximo 120 caracteres']);
+});
+
+test('erroresPorCampo: mensajes para Jesús, uno por campo', () => {
+  assert.deepEqual(A.erroresPorCampo(base()), {});
+  assert.deepEqual(A.erroresPorCampo({ fecha: '2026-02-30', direccion: 'D', masInfo: 'http://x', invitados: ['A', ''] }), {
+    fecha: 'La fecha no es válida.',
+    hora: 'Escoge la hora.',
+    lugar: 'Escribe el lugar.',
+    masInfo: 'El enlace debe empezar con https://',
+    invitados: 'Escribe un nombre por línea.'
+  });
+  assert.deepEqual(A.erroresPorCampo(base({ notas: 'n'.repeat(201) })), { notas: 'Máximo 200 caracteres.' });
+  assert.deepEqual(A.erroresPorCampo(base({ duracionMin: 0 })), { duracionMin: 'Escoge una duración.' });
+  assert.deepEqual(A.erroresPorCampo(null), { general: 'La presentación no tiene el formato correcto.' });
+});
+
+test('agenda.js deja Agenda en el ámbito global cuando no hay window ni module (Apps Script)', () => {
+  const vm = require('node:vm');
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const ctx = vm.createContext({});
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'agenda.js'), 'utf8'), ctx);
+  assert.equal(typeof ctx.Agenda.validarPresentacion, 'function');
+  assert.equal(typeof ctx.Agenda.erroresPorCampo, 'function');
+});
