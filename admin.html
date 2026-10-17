@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · Presentaciones</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#1c4fd6">
+  <meta name="color-scheme" content="only light">
+  <meta name="darkreader-lock">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@700;800&family=Montserrat:wght@400;600;700&display=swap">
+  <script>window.VERSION_CARGA = Date.now();</script>
+  <script>document.write('<link rel="stylesheet" href="styles.css?t=' + window.VERSION_CARGA + '">');</script>
+</head>
+<body>
+  <header class="admin__cabecera">
+    <p class="admin__marca">"Resilientes" <span class="admin__sin">sin</span>techo</p>
+    <h1 class="admin__titulo">Admin · Presentaciones</h1>
+    <p class="admin__enlaces">
+      <a href="./" target="_blank" rel="noopener">Ver la página</a>
+      <button type="button" id="salir" class="admin__salir" hidden>Salir</button>
+    </p>
+  </header>
+
+  <main class="admin__main">
+    <div id="aviso" class="admin__aviso" role="status" aria-live="polite" hidden></div>
+
+    <form id="entrar" class="admin__panel" novalidate>
+      <h2>Entrar</h2>
+      <label for="clave">Clave</label>
+      <input id="clave" name="clave" type="password" autocomplete="current-password"
+             autocapitalize="off" autocorrect="off" spellcheck="false">
+      <label class="admin__casilla"><input id="recordar" type="checkbox" checked> Recordar en este teléfono</label>
+      <p class="admin__error" id="error-entrar" hidden></p>
+      <div class="admin__botones"><button type="submit" class="boton boton--comprar">Entrar</button></div>
+    </form>
+
+    <section id="panel" hidden>
+      <button type="button" id="nueva" class="boton boton--comprar admin__nueva">+ Añadir presentación</button>
+
+      <div id="invalidas" class="admin__invalidas" hidden>
+        <p><strong></strong></p>
+        <ul></ul>
+      </div>
+
+      <form id="formulario" class="admin__panel" novalidate hidden>
+        <h2 id="titulo-formulario">Nueva presentación</h2>
+
+        <label for="f-fecha">Fecha</label>
+        <input id="f-fecha" name="fecha" type="date">
+        <p class="admin__error" data-error-de="fecha" hidden></p>
+
+        <label for="f-hora">Hora</label>
+        <input id="f-hora" name="hora" type="time">
+        <p class="admin__error" data-error-de="hora" hidden></p>
+
+        <label for="f-lugar">Lugar</label>
+        <input id="f-lugar" name="lugar" type="text" maxlength="120" placeholder="Ej. Librería Mágica">
+        <p class="admin__error" data-error-de="lugar" hidden></p>
+
+        <label for="f-direccion">Dirección</label>
+        <input id="f-direccion" name="direccion" type="text" maxlength="200" placeholder="Calle, número, pueblo">
+        <p class="admin__error" data-error-de="direccion" hidden></p>
+
+        <label for="f-invitados">Invitados <span>(opcional, un nombre por línea)</span></label>
+        <textarea id="f-invitados" name="invitados" rows="3" placeholder="Nombre Apellido (moderadora)"></textarea>
+        <p class="admin__error" data-error-de="invitados" hidden></p>
+
+        <label for="f-notas">Notas <span>(opcional)</span></label>
+        <input id="f-notas" name="notas" type="text" maxlength="200" placeholder="Ej. Entrada libre">
+        <p class="admin__error" data-error-de="notas" hidden></p>
+
+        <label for="f-masInfo">Enlace "Más información" <span>(opcional)</span></label>
+        <input id="f-masInfo" name="masInfo" type="url" inputmode="url" placeholder="https://…">
+        <p class="admin__error" data-error-de="masInfo" hidden></p>
+
+        <label for="f-duracionMin">Duración <span>(para el calendario)</span></label>
+        <select id="f-duracionMin" name="duracionMin">
+          <option value="60">1 hora</option>
+          <option value="90">1 hora 30 minutos</option>
+          <option value="120" selected>2 horas</option>
+          <option value="180">3 horas</option>
+        </select>
+        <p class="admin__error" data-error-de="duracionMin" hidden></p>
+
+        <details class="admin__avanzadas">
+          <summary>Opciones avanzadas</summary>
+          <label for="f-mapa">Enlace del mapa <span>(si se deja vacío, se busca el lugar y la dirección)</span></label>
+          <input id="f-mapa" name="mapa" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/…">
+          <p class="admin__error" data-error-de="mapa" hidden></p>
+        </details>
+
+        <p class="admin__error" id="error-formulario" hidden></p>
+        <div class="admin__botones">
+          <button type="submit" id="guardar" class="boton boton--comprar">Guardar</button>
+          <button type="button" id="cancelar" class="boton boton--claro">Cancelar</button>
+        </div>
+      </form>
+
+      <h2 class="admin__seccion">Próximas</h2>
+      <ol id="lista-proximas" class="tarjetas"></ol>
+      <p id="vacio-proximas" class="admin__vacio" hidden>No hay presentaciones próximas.</p>
+
+      <details class="anteriores">
+        <summary class="anteriores__resumen">Anteriores</summary>
+        <ol id="lista-anteriores" class="tarjetas tarjetas--pasadas"></ol>
+      </details>
+    </section>
+  </main>
+
+  <template id="tpl-admin-tarjeta">
+    <li class="tarjeta">
+      <div class="tarjeta__fecha" aria-hidden="true">
+        <span class="tarjeta__dia"></span>
+        <span class="tarjeta__mes"></span>
+        <span class="tarjeta__semana"></span>
+      </div>
+      <div class="tarjeta__cuerpo">
+        <p class="tarjeta__cuando"></p>
+        <p class="tarjeta__lugar"></p>
+        <p class="tarjeta__direccion"></p>
+        <div class="tarjeta__acciones">
+          <button type="button" class="boton boton--claro" data-accion="editar">Editar</button>
+          <button type="button" class="boton boton--claro admin__borrar" data-accion="borrar">Borrar</button>
+        </div>
+        <div class="admin__confirmar" hidden>
+          <p class="admin__pregunta"></p>
+          <button type="button" class="boton boton--comprar" data-accion="confirmar">Sí, borrar</button>
+          <button type="button" class="boton boton--claro" data-accion="cancelar-borrar">Cancelar</button>
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <script>
+    ['presentaciones.js', 'agenda.js', 'admin-datos.js', 'admin.js'].forEach(function (f) {
+      document.write('<script src="' + f + '?t=' + window.VERSION_CARGA + '"><\/script>');
+    });
+  </script>
+</body>
+</html>

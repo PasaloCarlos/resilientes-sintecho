@@ -19,6 +19,11 @@
    Si algo está mal escrito, la página muestra un aviso rojo diciendo qué y dónde.
 */
 
+// Dirección /exec del Apps Script del Google Sheet (README → "Admin").
+// Vacía: la página usa la lista window.presentaciones de abajo.
+// Puesta: las fechas salen del Sheet (las maneja Jesús en admin.html) y la lista de abajo es solo respaldo.
+window.agendaConfig = { url: 'https://script.google.com/macros/s/AKfycbzNXNBfXUzBJva1-adrvsa8UIVfnT72J5N--h_2e4ODC9Xnh5plcc83SOVxQJl9HEA_/exec' };
+
 window.libro = {
   titulo: '"Resilientes" sintecho',
   subtitulo: 'Etnografía de las tecnologías de poder estadounidense en el posdesastre',
@@ -31,31 +36,4 @@ window.libro = {
   comprar: 'https://www.libreriang.com/index.php?route=product%2Fproduct&product_id=101989',
 };
 
-window.presentaciones = [
-  // EJEMPLOS — reemplazar con las fechas reales antes de compartir el enlace.
-  {
-    fecha: '2026-10-17',
-    hora: '15:00',
-    lugar: 'Librería de ejemplo',
-    direccion: 'Calle Ejemplo 123, San Juan',
-    invitados: ['Nombre Apellido (moderadora)'],
-    notas: 'EJEMPLO — entrada libre'
-  },
-  {
-    fecha: '2026-11-12',
-    hora: '19:00',
-    duracionMin: 90,
-    lugar: 'Centro cultural de ejemplo',
-    direccion: 'Calle Ejemplo 45, Caguas',
-    invitados: ['Nombre Apellido (comentarista)', 'Nombre Apellido (moderador)'],
-    masInfo: 'https://www.example.com/',
-    notas: 'EJEMPLO'
-  },
-  {
-    fecha: '2026-09-20',
-    hora: '18:00',
-    lugar: 'Biblioteca de ejemplo',
-    direccion: 'Avenida Ejemplo 7, Mayagüez',
-    notas: 'EJEMPLO de presentación ya pasada'
-  }
-];
+window.presentaciones = [];

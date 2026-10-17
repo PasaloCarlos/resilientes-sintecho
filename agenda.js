@@ -153,13 +153,17 @@
 
   // RFC 5545 §3.1: líneas de ≤75 octetos; la continuación empieza con un espacio.
   // Se recorre por caracteres (for…of) para nunca partir un carácter multibyte.
-  const codificador = new TextEncoder();
+  // Octetos UTF-8 de un carácter. Sin TextEncoder: Apps Script no lo tiene y este archivo también corre allí.
+  function octetosUtf8(ch) {
+    const cp = ch.codePointAt(0);
+    return cp < 0x80 ? 1 : cp < 0x800 ? 2 : cp < 0x10000 ? 3 : 4;
+  }
   function plegar(linea) {
     const partes = [];
     let actual = '';
     let octetos = 0;
     for (const ch of linea) {
-      const n = codificador.encode(ch).length;
+      const n = octetosUtf8(ch);
       if (octetos + n > 75) {
         partes.push(actual);
         actual = ' ' + ch;
@@ -199,37 +203,95 @@
     return `presentacion-${p.fecha}.ics`;
   }
 
-  function erroresDePresentacion(p, ruta) {
-    if (p === null || typeof p !== 'object' || Array.isArray(p)) {
-      return [`${ruta}: debe ser un objeto { ... }`];
-    }
-    const errores = [];
+  const TOPES = { lugar: 120, direccion: 200, notas: 200, mapa: 500, masInfo: 500, invitado: 120, invitados: 10 };
+
+  // Cada problema es { campo, codigo }. validar() y validarPresentacion() lo escriben en técnico
+  // (para quien edita presentaciones.js); erroresPorCampo() en palabras para Jesús.
+  function problemas(p) {
+    if (p === null || typeof p !== 'object' || Array.isArray(p)) return [{ campo: '', codigo: 'objeto' }];
+    const lista = [];
     for (const campo of CAMPOS_REQUERIDOS) {
-      if (!esTextoNoVacio(p[campo])) errores.push(`${ruta}.${campo}: requerido`);
+      if (!esTextoNoVacio(p[campo])) lista.push({ campo, codigo: 'requerido' });
     }
-    if (esTextoNoVacio(p.fecha) && !fechaValida(p.fecha)) {
-      errores.push(`${ruta}.fecha: debe ser AAAA-MM-DD y una fecha real`);
-    }
-    if (esTextoNoVacio(p.hora) && !horaValida(p.hora)) {
-      errores.push(`${ruta}.hora: debe ser HH:MM en 24 horas (ej. 19:00)`);
-    }
+    if (esTextoNoVacio(p.fecha) && !fechaValida(p.fecha)) lista.push({ campo: 'fecha', codigo: 'fecha' });
+    if (esTextoNoVacio(p.hora) && !horaValida(p.hora)) lista.push({ campo: 'hora', codigo: 'hora' });
     if (!esAusente(p.duracionMin) && !(Number.isInteger(p.duracionMin) && p.duracionMin > 0)) {
-      errores.push(`${ruta}.duracionMin: debe ser un número entero de minutos mayor que 0`);
+      lista.push({ campo: 'duracionMin', codigo: 'duracion' });
     }
-    if (!esAusente(p.invitados) &&
-        !(Array.isArray(p.invitados) && p.invitados.every(esTextoNoVacio))) {
-      errores.push(`${ruta}.invitados: debe ser una lista de textos, ej. ["Nombre (rol)"]`);
+    if (!esAusente(p.invitados)) {
+      if (!(Array.isArray(p.invitados) && p.invitados.every(esTextoNoVacio))) {
+        lista.push({ campo: 'invitados', codigo: 'invitados' });
+      } else if (p.invitados.length > TOPES.invitados || p.invitados.some(i => i.length > TOPES.invitado)) {
+        lista.push({ campo: 'invitados', codigo: 'largo' });
+      }
     }
     for (const campo of ['mapa', 'masInfo']) {
       const v = p[campo];
-      if (!esAusente(v) && !(typeof v === 'string' && v.startsWith('https://'))) {
-        errores.push(`${ruta}.${campo}: debe empezar con https://`);
-      }
+      if (!esAusente(v) && !(typeof v === 'string' && v.startsWith('https://'))) lista.push({ campo, codigo: 'https' });
     }
-    if (!esAusente(p.notas) && typeof p.notas !== 'string') {
-      errores.push(`${ruta}.notas: debe ser texto`);
+    if (!esAusente(p.notas) && typeof p.notas !== 'string') lista.push({ campo: 'notas', codigo: 'texto' });
+    for (const campo of ['lugar', 'direccion', 'notas', 'mapa', 'masInfo']) {
+      if (typeof p[campo] === 'string' && p[campo].length > TOPES[campo]) lista.push({ campo, codigo: 'largo' });
     }
-    return errores;
+    return lista;
+  }
+
+  function textoTecnico(campo, codigo) {
+    switch (codigo) {
+      case 'requerido': return 'requerido';
+      case 'fecha': return 'debe ser AAAA-MM-DD y una fecha real';
+      case 'hora': return 'debe ser HH:MM en 24 horas (ej. 19:00)';
+      case 'duracion': return 'debe ser un número entero de minutos mayor que 0';
+      case 'invitados': return 'debe ser una lista de textos, ej. ["Nombre (rol)"]';
+      case 'https': return 'debe empezar con https://';
+      case 'texto': return 'debe ser texto';
+      case 'largo': return campo === 'invitados'
+        ? `máximo ${TOPES.invitados} invitados de ${TOPES.invitado} caracteres`
+        : `máximo ${TOPES[campo]} caracteres`;
+    }
+    return codigo;
+  }
+
+  const REQUERIDO_HUMANO = {
+    fecha: 'Escoge la fecha.', hora: 'Escoge la hora.',
+    lugar: 'Escribe el lugar.', direccion: 'Escribe la dirección.'
+  };
+
+  function textoHumano(campo, codigo) {
+    switch (codigo) {
+      case 'objeto': return 'La presentación no tiene el formato correcto.';
+      case 'requerido': return REQUERIDO_HUMANO[campo];
+      case 'fecha': return 'La fecha no es válida.';
+      case 'hora': return 'La hora no es válida.';
+      case 'duracion': return 'Escoge una duración.';
+      case 'invitados': return 'Escribe un nombre por línea.';
+      case 'https': return 'El enlace debe empezar con https://';
+      case 'texto': return 'Las notas deben ser texto.';
+      case 'largo': return campo === 'invitados'
+        ? `Máximo ${TOPES.invitados} invitados, de hasta ${TOPES.invitado} caracteres cada uno.`
+        : `Máximo ${TOPES[campo]} caracteres.`;
+    }
+    return 'Revisa este campo.';
+  }
+
+  function erroresDePresentacion(p, ruta) {
+    return problemas(p).map(({ campo, codigo }) =>
+      codigo === 'objeto' ? `${ruta}: debe ser un objeto { ... }` : `${ruta}.${campo}: ${textoTecnico(campo, codigo)}`);
+  }
+
+  function validarPresentacion(p) {
+    return problemas(p).map(({ campo, codigo }) =>
+      codigo === 'objeto' ? 'debe ser un objeto { ... }' : `${campo}: ${textoTecnico(campo, codigo)}`);
+  }
+
+  // { campo: mensaje } con el primer problema de cada campo; sin problemas → {}.
+  function erroresPorCampo(p) {
+    const salida = {};
+    for (const { campo, codigo } of problemas(p)) {
+      const llave = campo || 'general';
+      if (!(llave in salida)) salida[llave] = textoHumano(campo, codigo);
+    }
+    return salida;
   }
 
   function validar(libro, presentaciones) {
@@ -265,11 +327,14 @@
   }
 
   const Agenda = {
-    validar, instante, fin, hoyPR, dividir, horaLegible, formatear, urlMapa, slug, partirTitulo,
+    validar, validarPresentacion, erroresPorCampo, TOPES,
+    instante, fin, hoyPR, dividir, horaLegible, formatear, urlMapa, slug, partirTitulo,
     urlInstagramEmbed,
     tituloEvento, descripcion, utcCompacto, urlGoogle, escaparIcs, plegar, ics, nombreIcs
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = Agenda;
   if (root) root.Agenda = Agenda;
+  // Apps Script: no hay window ni module; el archivo "agenda" pegado allí deja Agenda global para Code.gs.
+  else if (typeof module === 'undefined' && typeof globalThis !== 'undefined') globalThis.Agenda = Agenda;
 })(typeof window !== 'undefined' ? window : null);

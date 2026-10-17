@@ -60,6 +60,48 @@ node --test
 - `index.html`, `styles.css` — estructura y apariencia.
 - `assets/` — imagen para compartir (`og.jpg`) y la lona azul del fondo (`lona.jpg`), ambas recortadas de la portada original. La página no muestra la foto de la portada: el título en esténcil sobre la lona hace ese papel. Cómo regenerarlas: ver el plan en `docs/superpowers/plans/`.
 
+## Admin (Jesús maneja las presentaciones)
+
+Las presentaciones viven en un Google Sheet. Jesús las agrega, edita y borra desde
+**`https://pasalocarlos.github.io/resilientes-sintecho/admin.html`** con una clave.
+La página pública las lee del Sheet: no hace falta tocar código ni hacer push.
+
+### Instalación (una sola vez, Carlos)
+
+1. Crea un Google Sheet con la cuenta cfigueroa0695@gmail.com y llámalo
+   **Resilientes sintecho — Presentaciones**. La hoja `Presentaciones` y sus encabezados
+   los crea el script la primera vez.
+2. En el Sheet: **Extensiones → Apps Script**.
+   - Borra lo que trae y pega el contenido de `apps-script/Code.gs`.
+   - **+ → Secuencia de comandos**, llámala `agenda` y pega el contenido completo de `agenda.js`.
+   - Guarda.
+3. **Configuración del proyecto (⚙) → Propiedades del script → Añadir propiedad:**
+   `ADMIN_CLAVE` = la clave para Jesús (una frase larga es mejor que una palabra).
+4. **Implementar → Nueva implementación → ⚙ Aplicación web.**
+   - Ejecutar como: **Yo**.
+   - Quién tiene acceso: **Cualquier usuario**.
+   - Autoriza cuando lo pida.
+   - Copia la URL que termina en **`/exec`**.
+5. En `presentaciones.js`: pon esa URL en `window.agendaConfig.url` y deja
+   `window.presentaciones = []`. Luego haz commit y push.
+6. Mándale a Jesús el enlace de `admin.html` y la clave **por canales distintos**.
+
+### Mantenimiento
+
+- **Cambiar la clave:** edita `ADMIN_CLAVE` en las Propiedades del script. Jesús tendrá que volver a entrar.
+- **Si cambias `Code.gs` o `agenda.js`:** vuelve a pegarlos en el Apps Script y luego
+  **Implementar → Administrar implementaciones → ✏ → Versión: Nueva versión → Implementar**.
+  Así la URL `/exec` no cambia.
+- **Corregir a mano:** puedes editar filas en el Sheet. **No cambies la columna `id`.**
+  Si una fila queda mal, la página la ignora y el admin la muestra en un aviso amarillo con el problema.
+- **Bloqueo por intentos:** tras 10 claves equivocadas, el admin dice "Demasiados intentos. Espera 10 minutos.",
+  incluso con la clave correcta.
+- **Si alguien bloquea el admin a propósito** (manda claves malas una y otra vez, porque la URL `/exec` es pública):
+  crea una implementación **nueva** (Implementar → Nueva implementación), pon la URL nueva en
+  `agendaConfig.url`, haz push y archiva la implementación vieja. La URL vieja deja de funcionar.
+- **Si Google no responde:** la página muestra la última copia guardada en cada navegador o,
+  en una primera visita, "No pudimos cargar las fechas." con un botón Reintentar.
+
 ## Publicar
 
 El sitio vive en **GitHub Pages**: https://pasalocarlos.github.io/resilientes-sintecho/
